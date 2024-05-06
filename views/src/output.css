@@ -701,6 +701,10 @@ video {
   margin-bottom: 0.25rem;
 }
 
+.mb-4{
+  margin-bottom: 1rem;
+}
+
 .ml-auto{
   margin-left: auto;
 }
@@ -723,10 +727,6 @@ video {
 
 .mt-auto{
   margin-top: auto;
-}
-
-.mb-4{
-  margin-bottom: 1rem;
 }
 
 .block{
@@ -1235,11 +1235,6 @@ video {
 
 .fill-current{
   fill: currentColor;
-}
-
-.object-contain{
-  -o-object-fit: contain;
-     object-fit: contain;
 }
 
 .object-cover{
