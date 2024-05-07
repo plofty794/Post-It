@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export const axiosPrivateRoute = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URL,
+  baseURL: import.meta.env.VITE_PROD_SERVER_URL,
   withCredentials: true,
   headers: {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
