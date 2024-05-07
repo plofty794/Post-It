@@ -5,7 +5,6 @@ export const authStore = create<State & Action>((set) => ({
   setToken: (token) =>
     set(() => {
       localStorage.setItem("token", token);
-      window.location.href = "/";
       return { token };
     }),
   logOut: () => {

@@ -23,8 +23,10 @@ function useLogin() {
       toast.error("Uh oh! Login failed", {
         description: message,
       });
-
       console.log(err);
+    },
+    onSettled() {
+      window.location.reload();
     },
   });
 }
