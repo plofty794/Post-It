@@ -4,19 +4,23 @@ import { Separator } from "@/components/ui/separator";
 
 import PopoverMenu from "@/components/PopoverMenu";
 import CreatePostDialog from "@/components/CreatePostDialog";
-import { authStore } from "@/store/authStore";
+import { authStore, savedPostsStore } from "@/store/authStore";
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
+import { LoaderIcon } from "lucide-react";
 
 function AuthenticatedLayout() {
+  const setSavedPosts = savedPostsStore((state) => state.setSavedPosts);
   const logOut = authStore((state) => state.logOut);
-  const { data, status } = useGetProfile();
+  const { data, status, isPending } = useGetProfile();
 
   useEffect(() => {
     if (status === "error") {
       logOut();
+    } else if (status === "success") {
+      setSavedPosts(data.data.savedPosts);
     }
-  }, [logOut, status]);
+  }, [data?.data.savedPosts, logOut, setSavedPosts, status]);
 
   return (
     <main className="dark:bg-[#09090B] dark:text-white">
@@ -54,7 +58,10 @@ function AuthenticatedLayout() {
       </div>
       <Separator />
       <div className="2xl:container 2xl:border-x min-h-screen w-3/4 mx-auto">
-        <Outlet />
+        {isPending && (
+          <LoaderIcon className="animate-spin size-20 mx-auto mt-24" />
+        )}
+        {!isPending && <Outlet />}
       </div>
     </main>
   );

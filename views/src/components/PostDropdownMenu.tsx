@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useGetProfile from "@/hooks/auth/useGetProfile";
+import { TSavedPost } from "@/hooks/auth/useGetYourSavedPosts";
 import useHidePost from "@/hooks/auth/useHidePost";
 import useSavePost from "@/hooks/auth/useSavePost";
 import useUnsavePost from "@/hooks/auth/useUnsavePost";
@@ -17,7 +18,7 @@ function PostDropdownMenu({
 }: {
   username: string;
   postID: string;
-  savedPosts?: string[];
+  savedPosts?: TSavedPost[];
 }) {
   const { data } = useGetProfile();
 
@@ -47,7 +48,7 @@ function PostDropdownMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="p-0">
-          {savedPosts?.find((savedPost) => savedPost === postID) ? (
+          {savedPosts?.find((savedPost) => savedPost._id === postID) ? (
             <UnsavePost postID={postID} />
           ) : (
             <SavePost postID={postID} />
@@ -89,7 +90,9 @@ function PostDropdownMenu({
 }
 
 function SavePost({ postID }: { postID: string }) {
-  const { mutate, isPending } = useSavePost();
+  const { mutate, isPending, isIdle, isPaused } = useSavePost();
+
+  console.log(isIdle, isPaused);
 
   return (
     <Button

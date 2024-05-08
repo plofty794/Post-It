@@ -1,8 +1,9 @@
-import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { TUser } from "./useGetUser";
+import useAxiosPrivate from "@/api/useAxiosPrivate";
 
 function useGetPosts() {
+  const axiosPrivateRoute = useAxiosPrivate();
   return useInfiniteQuery({
     queryKey: ["posts"],
     queryFn: async ({ pageParam = 1 }): Promise<TPosts> => {

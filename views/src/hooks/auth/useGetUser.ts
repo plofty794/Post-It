@@ -1,6 +1,8 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import { TSavedPost } from "./useGetYourSavedPosts";
+import { TPost } from "./useGetPosts";
 
 function useGetUser() {
   const { username } = useParams();
@@ -30,8 +32,8 @@ export type TUser = {
   username: string;
   profilePicUrl?: string;
   comments: string[];
-  posts: string[];
-  savedPosts: string[];
+  posts: TPost[];
+  savedPosts: TSavedPost[];
   _id: string;
 };
 

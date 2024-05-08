@@ -1,8 +1,9 @@
-import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useQuery } from "@tanstack/react-query";
 import { TUserData } from "./useGetUser";
+import useAxiosPrivate from "@/api/useAxiosPrivate";
 
 function useGetProfile() {
+  const axiosPrivateRoute = useAxiosPrivate();
   return useQuery({
     queryKey: ["your-profile"],
     queryFn: async (): Promise<TUserData> => {

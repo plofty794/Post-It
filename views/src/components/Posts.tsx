@@ -5,7 +5,7 @@ import {
   InfiniteData,
   InfiniteQueryObserverResult,
 } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
 import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,6 +13,7 @@ import { CardDescription } from "./ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Circle } from "lucide-react";
 import PostDropdownMenu from "./PostDropdownMenu";
+import { savedPostsStore } from "@/store/authStore";
 
 function Posts({
   posts,
@@ -32,6 +33,7 @@ function Posts({
   const { isIntersecting, ref } = useIntersectionObserver({
     threshold: 1,
   });
+  const savedPosts = savedPostsStore((state) => state.savedPosts);
 
   useEffect(() => {
     if (error != null) return;
@@ -39,10 +41,6 @@ function Posts({
       fetchNextPage();
     }
   }, [error, fetchNextPage, isIntersecting, posts.length]);
-
-  const savedPosts = useMemo(() => {
-    return posts.flatMap((post) => post.author.savedPosts);
-  }, [posts]);
 
   return posts.map((post, i) => (
     <div key={post._id}>

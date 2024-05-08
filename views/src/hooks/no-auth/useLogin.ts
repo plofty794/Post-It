@@ -25,9 +25,6 @@ function useLogin() {
       });
       console.log(err);
     },
-    onSettled() {
-      window.location.reload();
-    },
   });
 }
 
