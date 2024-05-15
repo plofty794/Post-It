@@ -6,11 +6,24 @@ function useGetYourHiddenPosts() {
   return useInfiniteQuery({
     queryKey: ["your-hidden-posts"],
     queryFn: async ({ pageParam = 1 }): Promise<THiddenPosts> => {
-      return await axiosPrivateRoute.get(`/your-hidden-posts/${pageParam}`);
+      return await axiosPrivateRoute.get(`/your-hidden-posts/${pageParam}`, {
+        signal: AbortSignal.timeout(1000 * 60),
+      });
     },
     initialPageParam: 1,
     getNextPageParam: (_, page) => page.length + 1,
     refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    gcTime: 60000,
+    throwOnError(error) {
+      if (
+        error.message ===
+        "Oops! It seems like your internet connection is a bit slow."
+      ) {
+        return true;
+      }
+      return false;
+    },
   });
 }
 

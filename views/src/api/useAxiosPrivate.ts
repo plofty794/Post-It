@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 import useRefreshAccessToken from "@/hooks/auth/useRefreshAccessToken";
 
 function useAxiosPrivate() {
+  const logOut = authStore((state) => state.logOut);
   const token = authStore((state) => state.token);
   const setToken = authStore((state) => state.setToken);
   const refreshAccessToken = useRefreshAccessToken();
@@ -28,6 +29,17 @@ function useAxiosPrivate() {
       },
       async (err) => {
         const error = err as AxiosError;
+        if (error.name === "CanceledError") {
+          return Promise.reject(
+            new Error(
+              "Oops! It seems like your internet connection is a bit slow."
+            )
+          );
+        }
+        if (error.config && error.response?.status === 401) {
+          logOut();
+          return Promise.reject(error);
+        }
         if (error.config && error.response?.status === 403) {
           const accessToken = await refreshAccessToken();
           if (accessToken instanceof AxiosError)

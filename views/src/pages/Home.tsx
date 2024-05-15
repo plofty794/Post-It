@@ -37,7 +37,7 @@ function Home() {
     <>
       <div className="pt-8 pb-16">
         <Card className="w-3/4 mx-auto">
-          <CardContent className="flex flex-col px-0">
+          <CardContent className="flex flex-col px-0 pb-0">
             {posts && posts?.length > 0 && (
               <Posts
                 error={error}

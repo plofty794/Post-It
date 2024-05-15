@@ -9,7 +9,8 @@ import useGetYourSavedPosts from "@/hooks/auth/useGetYourSavedPosts";
 import SavedPosts from "./SavedPosts";
 import useGetYourHiddenPosts from "@/hooks/auth/useGetYourHiddenPosts";
 import HiddenPosts from "./HiddenPosts";
-import { savedPostsStore } from "@/store/authStore";
+import { savedPostsStore } from "@/store/savedPostsStore";
+import { hiddenPostsStore } from "@/store/hiddenPostsStore";
 
 function ProfileTabs() {
   return (
@@ -84,7 +85,7 @@ function YourSavedPosts() {
   const { isPending, fetchNextPage, isFetchingNextPage, error } =
     useGetYourSavedPosts();
 
-  const yourSavedPosts = savedPostsStore((state) => state.savedPosts);
+  const savedPosts = savedPostsStore((state) => state.savedPosts);
 
   if (isPending) {
     return (
@@ -110,16 +111,16 @@ function YourSavedPosts() {
     <>
       <div className="pt-4 pb-16">
         <Card className="w-full mx-auto">
-          <CardContent className="flex flex-col px-0">
-            {yourSavedPosts && yourSavedPosts?.length > 0 && (
+          <CardContent className="flex flex-col px-0 pb-0">
+            {savedPosts && savedPosts?.length > 0 && (
               <SavedPosts
                 error={error}
                 fetchNextPage={fetchNextPage}
                 isFetchingNextPage={isFetchingNextPage}
-                savedPosts={yourSavedPosts}
+                savedPosts={savedPosts}
               />
             )}
-            {yourSavedPosts == null && (
+            {savedPosts == null && (
               <EmptyPosts
                 title="No saved posts"
                 svg={
@@ -141,7 +142,7 @@ function YourSavedPosts() {
                 description="button"
               />
             )}
-            {yourSavedPosts && yourSavedPosts.length < 1 && (
+            {savedPosts && savedPosts.length < 1 && (
               <EmptyPosts
                 title="No saved posts"
                 svg={
@@ -202,7 +203,7 @@ function YourPosts() {
     <>
       <div className="pt-4 pb-16">
         <Card className="w-full mx-auto">
-          <CardContent className="flex flex-col px-0">
+          <CardContent className="flex flex-col px-0 pb-0">
             {yourPosts && yourPosts?.length > 0 && (
               <Posts
                 error={error}
@@ -241,12 +242,12 @@ function YourPosts() {
 }
 
 function YourHiddenPosts() {
-  const { data, isPending, fetchNextPage, isFetchingNextPage, error } =
+  const { isPending, fetchNextPage, isFetchingNextPage, error } =
     useGetYourHiddenPosts();
 
-  const yourHiddenPosts = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data.hiddenPosts);
-  }, [data?.pages]);
+  const hiddenPosts = hiddenPostsStore((state) => state.hiddenPosts);
+
+  console.log(hiddenPosts);
 
   if (isPending) {
     return (
@@ -272,16 +273,38 @@ function YourHiddenPosts() {
     <>
       <div className="pt-4 pb-16">
         <Card className="w-full mx-auto">
-          <CardContent className="flex flex-col px-0">
-            {yourHiddenPosts && yourHiddenPosts?.length > 0 && (
+          <CardContent className="flex flex-col px-0 pb-0">
+            {hiddenPosts && hiddenPosts?.length > 0 && (
               <HiddenPosts
                 error={error}
                 fetchNextPage={fetchNextPage}
                 isFetchingNextPage={isFetchingNextPage}
-                hiddenPosts={yourHiddenPosts}
+                hiddenPosts={hiddenPosts}
               />
             )}
-            {yourHiddenPosts == null && (
+            {hiddenPosts == null && (
+              <EmptyPosts
+                title="No hidden posts to show"
+                svg={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"
+                    />
+                  </svg>
+                }
+                description="hide"
+              />
+            )}
+            {hiddenPosts && hiddenPosts.length < 1 && (
               <EmptyPosts
                 title="No hidden posts to show"
                 svg={

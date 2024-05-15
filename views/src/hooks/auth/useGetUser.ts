@@ -10,11 +10,23 @@ function useGetUser() {
   return useQuery({
     queryKey: ["profile", username],
     queryFn: async (): Promise<TUserData> => {
-      return await axiosPrivateRoute.get(`/user/${username}`);
+      return await axiosPrivateRoute.get(`/user/${username}`, {
+        signal: AbortSignal.timeout(1000 * 60),
+      });
     },
     enabled: username != null,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    gcTime: 60000,
+    throwOnError(error) {
+      if (
+        error.message ===
+        "Oops! It seems like your internet connection is a bit slow."
+      ) {
+        return true;
+      }
+      return false;
+    },
   });
 }
 

@@ -6,11 +6,24 @@ function useGetYourPosts() {
   return useInfiniteQuery({
     queryKey: ["your-posts"],
     queryFn: async ({ pageParam = 1 }): Promise<TPosts> => {
-      return await axiosPrivateRoute.get(`/your-posts/${pageParam}`);
+      return await axiosPrivateRoute.get(`/your-posts/${pageParam}`, {
+        signal: AbortSignal.timeout(1000 * 60),
+      });
     },
     initialPageParam: 1,
     getNextPageParam: (_, page) => page.length + 1,
     refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    gcTime: 60000,
+    throwOnError(error) {
+      if (
+        error.message ===
+        "Oops! It seems like your internet connection is a bit slow."
+      ) {
+        return true;
+      }
+      return false;
+    },
   });
 }
 

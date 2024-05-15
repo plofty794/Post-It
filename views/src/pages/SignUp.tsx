@@ -16,13 +16,18 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorMessage } from "@/lib/custom/utils";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useEmailVerificationCode from "@/hooks/no-auth/useEmailVerificationCode";
 import useSignUp from "@/hooks/no-auth/useSignUp";
 import { Toggle } from "@/components/ui/toggle";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { RotateCwIcon } from "lucide-react";
+import { useDocumentTitle } from "usehooks-ts";
 
 function SignUp() {
+  useDocumentTitle("Sign up - Post It");
+  const navigate = useNavigate();
   const { mutate, isSuccess, isPending } = useEmailVerificationCode();
   const {
     reset,
@@ -44,8 +49,12 @@ function SignUp() {
 
   return (
     <>
-      <Button className="absolute top-4 right-8" variant={"ghost"}>
-        <Link to={"/login"}>Login</Link>
+      <Button
+        className={cn("absolute top-4 right-8", isPending && "animate-pulse")}
+        variant={"ghost"}
+        onClick={() => navigate("/login")}
+      >
+        Login
       </Button>
 
       {isSuccess && <EmailVerificationCodeCard />}
@@ -87,20 +96,7 @@ function SignUp() {
                   >
                     Sign up with Email
                     {isPending ? (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                        className="w-5 h-5 animate-spin"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                        />
-                      </svg>
+                      <RotateCwIcon className="size-5 animate-spin" />
                     ) : (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

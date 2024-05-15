@@ -1,12 +1,15 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { TUser } from "./useGetUser";
 import { TPost } from "./useGetPosts";
 
-function useGetYourSavedPosts() {
+function useGetPostComments() {
+  const { postID } = useParams();
   return useInfiniteQuery({
-    queryKey: ["your-saved-posts"],
-    queryFn: async ({ pageParam = 1 }): Promise<TSavedPosts> => {
-      return await axiosPrivateRoute.get(`/your-saved-posts/${pageParam}`, {
+    queryKey: ["comments", postID],
+    queryFn: async ({ pageParam = 1 }): Promise<TComments> => {
+      return await axiosPrivateRoute.get(`/comments/${postID}/${pageParam}`, {
         signal: AbortSignal.timeout(1000 * 60),
       });
     },
@@ -27,19 +30,21 @@ function useGetYourSavedPosts() {
   });
 }
 
-export type TSavedPosts = {
+export type TComments = {
   data: {
-    savedPosts: [TSavedPost];
+    comments: TComment[];
   };
 };
 
-export type TSavedPost = {
-  createdAt: "2024-05-04T23:22:42.045Z";
-  savedBy: "6630da627ab49348b40d3ca5";
+export type TComment = {
+  author: TUser;
+  content: string;
+  createdAt: string;
+  parentComment: null;
   post: TPost;
-  updatedAt: "2024-05-04T23:22:42.045Z";
-  __v: 0;
-  _id: "6636c342aceae7d7ce48dbdf";
+  replies: TComment[];
+  updatedAt: string;
+  _id: string;
 };
 
-export default useGetYourSavedPosts;
+export default useGetPostComments;

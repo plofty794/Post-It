@@ -3,6 +3,7 @@ import {
   FetchNextPageOptions,
   InfiniteData,
   InfiniteQueryObserverResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
@@ -20,6 +21,8 @@ import {
 } from "./ui/tooltip";
 import { THiddenPost, THiddenPosts } from "@/hooks/auth/useGetYourHiddenPosts";
 import useUnhidePost from "@/hooks/auth/useUnHidePost";
+import PostFooter from "./PostFooter";
+import { TUserData } from "@/hooks/auth/useGetUser";
 
 function HiddenPosts({
   hiddenPosts,
@@ -39,6 +42,8 @@ function HiddenPosts({
   const { isIntersecting, ref } = useIntersectionObserver({
     threshold: 1,
   });
+  const queryClient = useQueryClient();
+  const yourProfileData = queryClient.getQueryData<TUserData>(["your-profile"]);
 
   useEffect(() => {
     if (error != null) return;
@@ -51,10 +56,7 @@ function HiddenPosts({
     <div key={hiddenPost._id}>
       {i == hiddenPosts.length - 1 ? (
         <>
-          <div
-            ref={ref}
-            className="flex flex-col gap-2 rounded-md hover:bg-[#292524] p-4"
-          >
+          <div ref={ref} className="flex flex-col gap-2 rounded-md p-4">
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
                 <Avatar className="size-6">
@@ -81,7 +83,7 @@ function HiddenPosts({
               </div>
               <div className="flex items-center justify-center gap-2">
                 <CardDescription className="text-xs">
-                  saved{" "}
+                  hidden{" "}
                   {formatDistanceToNow(new Date(hiddenPost.createdAt), {
                     addSuffix: true,
                   })}
@@ -96,9 +98,28 @@ function HiddenPosts({
                 __html: sanitizeHTML(hiddenPost.post.body),
               }}
             ></div>
+            <PostFooter
+              comments={hiddenPost.post.comments.length}
+              isDownvotedByYou={
+                hiddenPost.post.downvote.find(
+                  (v) => v.downvotedBy === yourProfileData?.data._id
+                )
+                  ? true
+                  : false
+              }
+              isUpvotedByYou={
+                hiddenPost.post.downvote.find(
+                  (v) => v.downvotedBy === yourProfileData?.data._id
+                )
+                  ? true
+                  : false
+              }
+              postID={hiddenPost.post._id}
+              upvoteCount={hiddenPost.post.upvoteCount}
+            />
           </div>
-          <div className="p-4 w-max mx-auto">
-            {isFetchingNextPage && (
+          {isFetchingNextPage && (
+            <div className="p-4 w-max mx-auto">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -113,14 +134,18 @@ function HiddenPosts({
                   d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
                 />
               </svg>
-            )}
-            {error != null && (
-              <Badge className="w-max mx-auto">Nothing more to load</Badge>
-            )}
-          </div>
+            </div>
+          )}
+          {error != null && (
+            <div className="p-4 w-max mx-auto">
+              <Badge variant={"destructive"} className="w-max mx-auto">
+                Nothing more to load
+              </Badge>
+            </div>
+          )}
         </>
       ) : (
-        <div className="flex flex-col gap-2 rounded-md hover:bg-[#292524] p-4">
+        <div className="flex flex-col gap-2 rounded-md p-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
               <Avatar className="size-6">
@@ -146,7 +171,7 @@ function HiddenPosts({
             </div>
             <div className="flex items-center justify-center gap-2">
               <CardDescription className="text-xs">
-                saved{" "}
+                hidden{" "}
                 {formatDistanceToNow(new Date(hiddenPost.createdAt), {
                   addSuffix: true,
                 })}
@@ -161,6 +186,25 @@ function HiddenPosts({
               __html: sanitizeHTML(hiddenPost.post.body),
             }}
           ></div>
+          <PostFooter
+            comments={hiddenPost.post.comments.length}
+            isDownvotedByYou={
+              hiddenPost.post.downvote.find(
+                (v) => v.downvotedBy === yourProfileData?.data._id
+              )
+                ? true
+                : false
+            }
+            isUpvotedByYou={
+              hiddenPost.post.downvote.find(
+                (v) => v.downvotedBy === yourProfileData?.data._id
+              )
+                ? true
+                : false
+            }
+            postID={hiddenPost.post._id}
+            upvoteCount={hiddenPost.post.upvoteCount}
+          />
         </div>
       )}
     </div>
@@ -190,13 +234,18 @@ function UnhidePost({ postID }: { postID: string }) {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="m3 3 1.664 1.664M21 21l-1.5-1.5m-5.485-1.242L12 17.25 4.5 21V8.742m.164-4.078a2.15 2.15 0 0 1 1.743-1.342 48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185V19.5M4.664 4.664 19.5 19.5"
+                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
               />
             </svg>
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p className="text-xs">Unsave post</p>
+          <p className="text-xs">Unhide post</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

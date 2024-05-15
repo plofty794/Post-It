@@ -7,12 +7,23 @@ function useGetProfile() {
   return useQuery({
     queryKey: ["your-profile"],
     queryFn: async (): Promise<TUserData> => {
-      return await axiosPrivateRoute.get("/me");
+      return await axiosPrivateRoute.get("/me", {
+        signal: AbortSignal.timeout(1000 * 60),
+      });
     },
     enabled: localStorage.getItem("token") != null,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-    retry: 1,
+    gcTime: 60000,
+    throwOnError(error) {
+      if (
+        error.message ===
+        "Oops! It seems like your internet connection is a bit slow."
+      ) {
+        return true;
+      }
+      return false;
+    },
   });
 }
 

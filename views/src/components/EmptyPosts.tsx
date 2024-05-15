@@ -23,7 +23,7 @@ function EmptyPosts({
         {View}
       </div>
       <CardTitle className="text-lg">{title}</CardTitle>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 max-lg:flex-col">
         <CardDescription>Create one by clicking the </CardDescription>
         <Badge
           className="flex items-center justify-center gap-2 w-max"

@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import Tiptap from "@/components/Tiptap";
+import PostBody from "@/components/PostBody";
 
 function CreatePostDialog() {
   return (
@@ -35,7 +35,7 @@ function CreatePostDialog() {
           <DialogTitle className="text-2xl">Create post</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
-          <Tiptap />
+          <PostBody />
         </div>
       </DialogContent>
     </Dialog>

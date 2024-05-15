@@ -3,6 +3,7 @@ import {
   FetchNextPageOptions,
   InfiniteData,
   InfiniteQueryObserverResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
@@ -20,6 +21,8 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import useUnsavePost from "@/hooks/auth/useUnsavePost";
+import PostFooter from "./PostFooter";
+import { TUserData } from "@/hooks/auth/useGetUser";
 
 function SavedPosts({
   savedPosts,
@@ -39,6 +42,8 @@ function SavedPosts({
   const { isIntersecting, ref } = useIntersectionObserver({
     threshold: 1,
   });
+  const queryClient = useQueryClient();
+  const yourProfileData = queryClient.getQueryData<TUserData>(["your-profile"]);
 
   useEffect(() => {
     if (error != null) return;
@@ -51,10 +56,7 @@ function SavedPosts({
     <div key={savedPost._id}>
       {i == savedPosts.length - 1 ? (
         <>
-          <div
-            ref={ref}
-            className="flex flex-col gap-2 rounded-md hover:bg-[#292524] p-4"
-          >
+          <div ref={ref} className="flex flex-col gap-2 rounded-md p-4">
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
                 <Avatar className="size-6">
@@ -95,9 +97,28 @@ function SavedPosts({
                 __html: sanitizeHTML(savedPost.post.body),
               }}
             ></div>
+            <PostFooter
+              comments={savedPost.post.comments.length}
+              isDownvotedByYou={
+                savedPost.post.downvote.find(
+                  (v) => v.downvotedBy === yourProfileData?.data._id
+                )
+                  ? true
+                  : false
+              }
+              isUpvotedByYou={
+                savedPost.post.downvote.find(
+                  (v) => v.downvotedBy === yourProfileData?.data._id
+                )
+                  ? true
+                  : false
+              }
+              postID={savedPost.post._id}
+              upvoteCount={savedPost.post.upvoteCount}
+            />
           </div>
-          <div className="p-4 w-max mx-auto">
-            {isFetchingNextPage && (
+          {isFetchingNextPage && (
+            <div className="p-4 w-max mx-auto">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -112,14 +133,18 @@ function SavedPosts({
                   d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5"
                 />
               </svg>
-            )}
-            {error != null && (
-              <Badge className="w-max mx-auto">Nothing more to load</Badge>
-            )}
-          </div>
+            </div>
+          )}
+          {error != null && (
+            <div className="p-4 w-max mx-auto">
+              <Badge variant={"destructive"} className="w-max mx-auto">
+                Nothing more to load
+              </Badge>
+            </div>
+          )}
         </>
       ) : (
-        <div className="flex flex-col gap-2 rounded-md hover:bg-[#292524] p-4">
+        <div className="flex flex-col gap-2 rounded-md p-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
               <Avatar className="size-6">
@@ -161,6 +186,25 @@ function SavedPosts({
               __html: sanitizeHTML(savedPost.post.body),
             }}
           ></div>
+          <PostFooter
+            comments={savedPost.post.comments.length}
+            isDownvotedByYou={
+              savedPost.post.downvote.find(
+                (v) => v.downvotedBy === yourProfileData?.data._id
+              )
+                ? true
+                : false
+            }
+            isUpvotedByYou={
+              savedPost.post.downvote.find(
+                (v) => v.downvotedBy === yourProfileData?.data._id
+              )
+                ? true
+                : false
+            }
+            postID={savedPost.post._id}
+            upvoteCount={savedPost.post.upvoteCount}
+          />
         </div>
       )}
     </div>

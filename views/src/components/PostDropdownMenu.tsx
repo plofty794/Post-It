@@ -1,3 +1,4 @@
+import useDeletePost from "@/hooks/auth/useDeletePost";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -6,26 +7,59 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useGetProfile from "@/hooks/auth/useGetProfile";
-import { TSavedPost } from "@/hooks/auth/useGetYourSavedPosts";
+import useGetYourHiddenPosts from "@/hooks/auth/useGetYourHiddenPosts";
+import useGetYourSavedPosts from "@/hooks/auth/useGetYourSavedPosts";
 import useHidePost from "@/hooks/auth/useHidePost";
 import useSavePost from "@/hooks/auth/useSavePost";
 import useUnsavePost from "@/hooks/auth/useUnsavePost";
+import { hiddenPostsStore } from "@/store/hiddenPostsStore";
+import { savedPostsStore } from "@/store/savedPostsStore";
+import { Trash2Icon } from "lucide-react";
+import { useEffect } from "react";
 
 function PostDropdownMenu({
   username,
   postID,
-  savedPosts,
 }: {
   username: string;
   postID: string;
-  savedPosts?: TSavedPost[];
 }) {
   const { data } = useGetProfile();
+  const deletePost = useDeletePost();
+  const savedPostsData = useGetYourSavedPosts();
+  const savedPosts = savedPostsStore((state) => state.savedPosts);
+  const setSavedPosts = savedPostsStore((state) => state.setSavedPosts);
+  const hiddenPostsData = useGetYourHiddenPosts();
+  const setHiddenPosts = hiddenPostsStore((state) => state.setHiddenPosts);
+
+  useEffect(() => {
+    if (savedPostsData.isSuccess) {
+      setSavedPosts(
+        savedPostsData.data?.pages.flatMap((page) => page.data.savedPosts)
+      );
+    }
+    if (hiddenPostsData.isSuccess) {
+      setHiddenPosts(
+        hiddenPostsData.data?.pages.flatMap((page) => page.data.hiddenPosts)
+      );
+    }
+  }, [
+    hiddenPostsData.data?.pages,
+    hiddenPostsData.isSuccess,
+    savedPostsData.data?.pages,
+    savedPostsData.isSuccess,
+    setHiddenPosts,
+    setSavedPosts,
+  ]);
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger
+        disabled={savedPostsData.isPending || hiddenPostsData.isPending}
+        asChild
+      >
         <Button
+          disabled={savedPostsData.isPending}
           size={"sm"}
           variant={"ghost"}
           className="hover:!bg-stone-600 px-2"
@@ -48,7 +82,7 @@ function PostDropdownMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="p-0">
-          {savedPosts?.find((savedPost) => savedPost._id === postID) ? (
+          {savedPosts.find((savedPost) => savedPost.post?._id === postID) ? (
             <UnsavePost postID={postID} />
           ) : (
             <SavePost postID={postID} />
@@ -84,15 +118,28 @@ function PostDropdownMenu({
             </DropdownMenuItem>
           </>
         )}
+        <DropdownMenuItem className=" p-0">
+          {username === data?.data.username && (
+            <Button
+              onClick={() => {
+                deletePost.mutate({ postID });
+              }}
+              size={"sm"}
+              variant={"ghost"}
+              className="justify-evenly w-full text-xs !bg-transparent hover:!text-red-600 text-red-700 font-bold"
+            >
+              <Trash2Icon className="size-5" />
+              Delete
+            </Button>
+          )}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
 function SavePost({ postID }: { postID: string }) {
-  const { mutate, isPending, isIdle, isPaused } = useSavePost();
-
-  console.log(isIdle, isPaused);
+  const { mutate, isPending } = useSavePost();
 
   return (
     <Button

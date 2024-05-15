@@ -3,14 +3,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
 
-function useCreatePost() {
+function useDeletePost() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ title, body }: { title: string; body?: string }) => {
-      return axiosPrivateRoute.post("/create-post", {
-        title,
-        body,
-      });
+    mutationFn: async ({ postID }: { postID: string }) => {
+      return await axiosPrivateRoute.delete(`/delete-post/${postID}`);
     },
     onSuccess(data) {
       toast.success(data.data.message);
@@ -22,9 +19,22 @@ function useCreatePost() {
     onSettled() {
       queryClient.invalidateQueries({
         queryKey: ["posts"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-posts"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-saved-posts"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-hidden-posts"],
+        refetchType: "all",
       });
     },
   });
 }
 
-export default useCreatePost;
+export default useDeletePost;
