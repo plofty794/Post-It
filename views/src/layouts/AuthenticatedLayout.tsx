@@ -5,10 +5,36 @@ import PopoverMenu from "@/components/PopoverMenu";
 import CreatePostDialog from "@/components/CreatePostDialog";
 import { Card } from "@/components/ui/card";
 import { ping } from "ldrs";
+import { useDocumentTitle } from "usehooks-ts";
+import { useEffect } from "react";
+import UserNotification from "@/components/UserNotification";
+import { useQueryClient } from "@tanstack/react-query";
 ping.register();
 
 function AuthenticatedLayout() {
+  useDocumentTitle("Post It");
   const { data, isPending } = useGetProfile();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const source = new EventSource(
+      import.meta.env.VITE_PROD_SERVER_URL + "/new-notification"
+    );
+
+    source.addEventListener("new-notification", (e) => {
+      if (data?.data._id === (e.data as string).split("=")[1]) {
+        queryClient.invalidateQueries({
+          queryKey: ["your-notifications"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["your-posts"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["posts"],
+        });
+      }
+    });
+  }, [data?.data._id, queryClient]);
 
   return (
     <>
@@ -25,20 +51,7 @@ function AuthenticatedLayout() {
           </Link>
           <div className="flex items-center justify-center gap-4">
             <CreatePostDialog />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
-              />
-            </svg>
+            <UserNotification />
             <PopoverMenu
               username={data?.data.username}
               profilePicUrl={data?.data.profilePicUrl}

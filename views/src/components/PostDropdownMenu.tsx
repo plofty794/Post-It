@@ -12,10 +12,18 @@ import useGetYourSavedPosts from "@/hooks/auth/useGetYourSavedPosts";
 import useHidePost from "@/hooks/auth/useHidePost";
 import useSavePost from "@/hooks/auth/useSavePost";
 import useUnsavePost from "@/hooks/auth/useUnsavePost";
-import { hiddenPostsStore } from "@/store/hiddenPostsStore";
-import { savedPostsStore } from "@/store/savedPostsStore";
 import { Trash2Icon } from "lucide-react";
-import { useEffect } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 function PostDropdownMenu({
   username,
@@ -25,32 +33,8 @@ function PostDropdownMenu({
   postID: string;
 }) {
   const { data } = useGetProfile();
-  const deletePost = useDeletePost();
   const savedPostsData = useGetYourSavedPosts();
-  const savedPosts = savedPostsStore((state) => state.savedPosts);
-  const setSavedPosts = savedPostsStore((state) => state.setSavedPosts);
   const hiddenPostsData = useGetYourHiddenPosts();
-  const setHiddenPosts = hiddenPostsStore((state) => state.setHiddenPosts);
-
-  useEffect(() => {
-    if (savedPostsData.isSuccess) {
-      setSavedPosts(
-        savedPostsData.data?.pages.flatMap((page) => page.data.savedPosts)
-      );
-    }
-    if (hiddenPostsData.isSuccess) {
-      setHiddenPosts(
-        hiddenPostsData.data?.pages.flatMap((page) => page.data.hiddenPosts)
-      );
-    }
-  }, [
-    hiddenPostsData.data?.pages,
-    hiddenPostsData.isSuccess,
-    savedPostsData.data?.pages,
-    savedPostsData.isSuccess,
-    setHiddenPosts,
-    setSavedPosts,
-  ]);
 
   return (
     <DropdownMenu>
@@ -82,7 +66,9 @@ function PostDropdownMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="p-0">
-          {savedPosts.find((savedPost) => savedPost.post?._id === postID) ? (
+          {savedPostsData.data?.pages
+            .flatMap((page) => page.data.savedPosts)
+            .find((savedPost) => savedPost.post?._id === postID) ? (
             <UnsavePost postID={postID} />
           ) : (
             <SavePost postID={postID} />
@@ -118,23 +104,48 @@ function PostDropdownMenu({
             </DropdownMenuItem>
           </>
         )}
-        <DropdownMenuItem className=" p-0">
-          {username === data?.data.username && (
-            <Button
-              onClick={() => {
-                deletePost.mutate({ postID });
-              }}
-              size={"sm"}
-              variant={"ghost"}
-              className="justify-evenly w-full text-xs !bg-transparent hover:!text-red-600 text-red-700 font-bold"
-            >
-              <Trash2Icon className="size-5" />
-              Delete
-            </Button>
-          )}
-        </DropdownMenuItem>
+
+        {username === data?.data.username && <DeletePost postID={postID} />}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function DeletePost({ postID }: { postID: string }) {
+  const deletePost = useDeletePost();
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          size={"sm"}
+          variant={"ghost"}
+          className="justify-evenly w-full text-xs !bg-transparent hover:!text-red-600 text-red-700 font-bold"
+        >
+          <Trash2Icon className="size-5" />
+          Delete
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete this post
+            including comments, votes and remove your data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              deletePost.mutate({ postID });
+            }}
+          >
+            Continue
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

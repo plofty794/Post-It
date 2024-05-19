@@ -17,13 +17,11 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import PostComment from "@/components/PostComment";
 import useGetPostComments, { TComment } from "@/hooks/auth/useGetPostComments";
-import { useMemo, useState } from "react";
-import CommentFooter from "@/components/CommentFooter";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { useMemo } from "react";
+import Comment from "@/components/Comment";
+
+import { ping } from "ldrs";
+ping.register();
 
 function VisitPost() {
   const { data, isPending, error, isError } = useVisitPost();
@@ -161,11 +159,19 @@ function Comments() {
   }, [data?.pages]);
 
   if (isPending) {
-    return <h1>Loading...</h1>;
+    return (
+      <div className="w-max mx-auto mt-24">
+        <l-ping size="55" speed="2" color="white"></l-ping>
+      </div>
+    );
   }
 
   if (parentComments["null"] == null) {
-    return <h1>No comments to show.</h1>;
+    return (
+      <Badge variant={"destructive"} className="w-max mx-auto font-bold">
+        No comments to show
+      </Badge>
+    );
   }
 
   function getReplies(commentID: string) {
@@ -185,79 +191,6 @@ function Comments() {
           </Card>
         ))}
     </div>
-  );
-}
-
-function Comment({
-  comment,
-  commentID,
-  getReplies,
-}: {
-  comment: TComment;
-  commentID: string;
-  getReplies: (commentID: string) => TComment[];
-}) {
-  const [isRepliesOpen, setIsRepliesOpen] = useState(false);
-
-  return (
-    <>
-      <Card className="w-full mx-auto p-0 !bg-transparent rounded-none border-y-0 border-r-0 !border-l !border-lime-400">
-        <div className="flex flex-col gap-2 rounded-md p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2">
-              <Avatar className="size-6">
-                <AvatarImage
-                  src={
-                    comment.post.author.profilePicUrl ??
-                    "https://github.com/shadcn.png"
-                  }
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className="flex items-center justify-center gap-2">
-                <CardDescription className="text-xs">
-                  {comment?.author?.username}
-                </CardDescription>
-                <Circle stroke="white" fill="white" className="size-1" />
-                <CardDescription className="text-xs">
-                  {formatDistanceToNow(new Date(comment.createdAt), {
-                    addSuffix: true,
-                  })}
-                </CardDescription>
-              </div>
-            </div>
-          </div>
-          <div
-            className="text-sm"
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHTML(comment?.content),
-            }}
-          ></div>
-          <CommentFooter commentID={comment?._id} />
-          {comment.replies.length > 0 && (
-            <Collapsible onOpenChange={(open) => setIsRepliesOpen(open)}>
-              <CollapsibleTrigger>
-                <Button className="p-0 text-xs" size={"sm"} variant={"link"}>
-                  {isRepliesOpen ? "Hide" : "Show"}{" "}
-                  {comment.replies.length > 1 && comment.replies.length}{" "}
-                  {comment.replies.length > 1 ? "replies" : "reply"}
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                {getReplies(commentID)?.length > 0 &&
-                  getReplies(commentID).map((reply) => (
-                    <Comment
-                      comment={reply}
-                      commentID={reply._id}
-                      getReplies={getReplies}
-                    />
-                  ))}
-              </CollapsibleContent>
-            </Collapsible>
-          )}
-        </div>
-      </Card>
-    </>
   );
 }
 

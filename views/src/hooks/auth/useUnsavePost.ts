@@ -1,12 +1,15 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
-import { savedPostsStore } from "@/store/savedPostsStore";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
+import { TSavedPosts } from "./useGetYourSavedPosts";
 
 function useUnsavePost() {
   const queryClient = useQueryClient();
-  const remove = savedPostsStore((state) => state.remove);
   return useMutation({
     mutationFn: async ({ postID }: { postID?: string }) => {
       return await axiosPrivateRoute.post(`/unsave-post/${postID}`);
@@ -15,7 +18,27 @@ function useUnsavePost() {
       toast.info(data.data.message);
       if (typeof postID == "undefined") return;
 
-      remove(postID);
+      queryClient.setQueryData(
+        ["your-saved-posts"],
+        (
+          oldData: InfiniteData<TSavedPosts, unknown>
+        ): InfiniteData<TSavedPosts, unknown> => {
+          return {
+            pages: [
+              {
+                data: {
+                  savedPosts: oldData.pages.flatMap((page) =>
+                    page.data.savedPosts.filter((post) => {
+                      return post.post._id != postID;
+                    })
+                  ),
+                },
+              },
+            ],
+            pageParams: [1],
+          };
+        }
+      );
     },
     onError(err) {
       const error = ((err as AxiosError).response as AxiosResponse).data.error;

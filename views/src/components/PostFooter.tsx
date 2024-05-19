@@ -7,7 +7,6 @@ import {
 import { Button } from "./ui/button";
 import { Toggle } from "./ui/toggle";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import useUpdateUpvote from "@/hooks/auth/useUpdateUpvote";
 import useUpdateDownvote from "@/hooks/auth/useUpdateDownvote";
 import { Link } from "react-router-dom";
@@ -27,7 +26,7 @@ function PostFooter({
 }) {
   return (
     <div className="mt-2 w-full flex items-center gap-4">
-      <div className="flex items-center gap-2 border border-stone-800 rounded-md">
+      <div className="flex items-center gap-2">
         <UpvoteAndDownvote
           isDownvotedByYou={isDownvotedByYou}
           isUpvotedByYou={isUpvotedByYou}
@@ -36,12 +35,12 @@ function PostFooter({
         />
       </div>
       <Link to={`/post/${postID}`}>
-        <Button className="text-xs gap-2" size={"sm"} variant={"outline"}>
+        <Button className="text-xs gap-2" size={"sm"} variant={"ghost"}>
           <MessageSquare className="size-5" />
           <p className="text-xs">{comments}</p>
         </Button>
       </Link>
-      <Button className="text-xs gap-2" size={"sm"} variant={"outline"}>
+      <Button className="text-xs gap-2" size={"sm"} variant={"ghost"}>
         <Share className="size-5" />
         Share
       </Button>
@@ -62,13 +61,13 @@ function UpvoteAndDownvote({
 }) {
   const [upvotePressed, setUpvotePressed] = useState(false);
   const [downvotePressed, setDownvotePressed] = useState(false);
-
   const updateUpvote = useUpdateUpvote();
   const updateDownvote = useUpdateDownvote();
 
   return (
     <>
       <Toggle
+        disabled={updateDownvote.isPending}
         pressed={upvotePressed}
         onPressedChange={(v) => {
           if (downvotePressed) {
@@ -79,35 +78,40 @@ function UpvoteAndDownvote({
             updateUpvote.mutate({ postID });
           }
         }}
-        className={cn(
-          "text-xs [&_*]:hover:stroke-white hover:!bg-green-600",
-          isUpvotedByYou ? "[&_*]:stroke-white !bg-green-600" : ""
-        )}
+        className="text-xs !border-none"
+        variant={"outline"}
         size={"sm"}
       >
-        <ArrowBigUpDashIcon className="size-5" />
+        <ArrowBigUpDashIcon
+          color={isUpvotedByYou ? "#22c55e" : ""}
+          fill={isUpvotedByYou ? "#22c55e" : ""}
+          stroke={isUpvotedByYou ? "#22c55e" : "white"}
+          className="size-5"
+        />
       </Toggle>
       <p className="text-xs">{upvoteCount}</p>
       <Toggle
-        disabled={upvoteCount <= 1}
+        disabled={upvoteCount <= 1 || updateDownvote.isPending}
         pressed={downvotePressed}
         onPressedChange={(v) => {
           if (upvotePressed) {
             setUpvotePressed(false);
             setDownvotePressed(true);
           } else {
-            updateDownvote.mutate({ postID });
-
             setDownvotePressed(v);
+            updateDownvote.mutate({ postID });
           }
         }}
-        className={cn(
-          "text-xs [&_*]:hover:stroke-white hover:!bg-red-600",
-          isDownvotedByYou ? "[&_*]:stroke-white !bg-red-600" : ""
-        )}
         size={"sm"}
+        className="text-xs !border-none"
+        variant={"outline"}
       >
-        <ArrowBigDownDashIcon className="size-5" />
+        <ArrowBigDownDashIcon
+          color={isDownvotedByYou ? "#DC2626" : ""}
+          fill={isDownvotedByYou ? "#DC2626" : ""}
+          stroke={isDownvotedByYou ? "#DC2626" : "white"}
+          className="size-5"
+        />
       </Toggle>
     </>
   );

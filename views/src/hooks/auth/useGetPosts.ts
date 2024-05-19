@@ -30,7 +30,7 @@ function useGetPosts() {
 
 export type TPosts = {
   data: {
-    posts: [TPost];
+    posts: TPost[];
   };
 };
 

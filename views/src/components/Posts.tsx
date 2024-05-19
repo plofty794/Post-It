@@ -45,8 +45,6 @@ function Posts({
     }
   }, [error, fetchNextPage, isIntersecting, posts.length]);
 
-  console.log(posts);
-
   return posts.map((post, i) => (
     <div key={post._id}>
       {i == posts.length - 1 ? (

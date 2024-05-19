@@ -1,6 +1,8 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError, AxiosResponse } from "axios";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 function useUpdateDownvote() {
   const { postID } = useParams();
@@ -12,8 +14,9 @@ function useUpdateDownvote() {
         postID,
       });
     },
-    onError(error) {
-      console.log(error);
+    onError(err) {
+      const error = ((err as AxiosError).response as AxiosResponse).data.error;
+      toast.error(error);
     },
     onSettled() {
       if (postID) {

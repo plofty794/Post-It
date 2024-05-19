@@ -1,9 +1,9 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { AxiosError, AxiosResponse } from "axios";
+import { toast } from "sonner";
 
 function useUpdateUpvote() {
-  const { postID } = useParams();
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ postID }: { postID: string }) => {
@@ -11,10 +11,11 @@ function useUpdateUpvote() {
         postID,
       });
     },
-    onError(error) {
-      console.log(error);
+    onError(err) {
+      const error = ((err as AxiosError).response as AxiosResponse).data.error;
+      toast.error(error);
     },
-    onSettled() {
+    onSettled(_, __, { postID }) {
       if (postID) {
         queryClient.invalidateQueries({
           queryKey: ["post", postID],

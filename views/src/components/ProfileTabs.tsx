@@ -9,8 +9,6 @@ import useGetYourSavedPosts from "@/hooks/auth/useGetYourSavedPosts";
 import SavedPosts from "./SavedPosts";
 import useGetYourHiddenPosts from "@/hooks/auth/useGetYourHiddenPosts";
 import HiddenPosts from "./HiddenPosts";
-import { savedPostsStore } from "@/store/savedPostsStore";
-import { hiddenPostsStore } from "@/store/hiddenPostsStore";
 
 function ProfileTabs() {
   return (
@@ -82,10 +80,12 @@ function ProfileTabs() {
 }
 
 function YourSavedPosts() {
-  const { isPending, fetchNextPage, isFetchingNextPage, error } =
+  const { isPending, fetchNextPage, isFetchingNextPage, error, data } =
     useGetYourSavedPosts();
 
-  const savedPosts = savedPostsStore((state) => state.savedPosts);
+  const savedPosts = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data.savedPosts);
+  }, [data?.pages]);
 
   if (isPending) {
     return (
@@ -242,12 +242,20 @@ function YourPosts() {
 }
 
 function YourHiddenPosts() {
-  const { isPending, fetchNextPage, isFetchingNextPage, error } =
+  const { isPending, fetchNextPage, isFetchingNextPage, error, data } =
     useGetYourHiddenPosts();
 
-  const hiddenPosts = hiddenPostsStore((state) => state.hiddenPosts);
-
-  console.log(hiddenPosts);
+  const hiddenPosts = useMemo(() => {
+    return data?.pages.flatMap((page) =>
+      page.data.hiddenPosts.filter((obj, index, arr) => {
+        return (
+          arr.findIndex((o) => {
+            return JSON.stringify(o) === JSON.stringify(obj);
+          }) === index
+        );
+      })
+    );
+  }, [data?.pages]);
 
   if (isPending) {
     return (
