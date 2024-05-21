@@ -7,10 +7,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import PostBody from "@/components/PostBody";
+import { useState } from "react";
 
 function CreatePostDialog() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant={"ghost"} size={"sm"} className="gap-2">
           <svg
@@ -35,7 +38,7 @@ function CreatePostDialog() {
           <DialogTitle className="text-2xl">Create post</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
-          <PostBody />
+          <PostBody setOpen={setOpen} />
         </div>
       </DialogContent>
     </Dialog>

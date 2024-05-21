@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   ArrowBigDownDashIcon,
   ArrowBigUpDashIcon,
@@ -19,23 +19,19 @@ import { ScrollArea } from "./ui/scroll-area";
 import { CardDescription } from "./ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Separator } from "./ui/separator";
-import { Link } from "react-router-dom";
+import useReadNotification from "@/hooks/auth/useReadNotification";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 function UserNotification() {
-  const { data, isPending } = useGetYourNotifications();
-  const [isOpen, setIsOpen] = useState(false);
+  const readNotification = useReadNotification();
+  const { data, isPending, fetchNextPage, isFetchingNextPage, isError } =
+    useGetYourNotifications();
 
   const notifications = useMemo(() => {
-    if (isOpen) {
-      return data?.pages.flatMap((page) =>
-        page.data.notifications.map((v) => {
-          v.read = true;
-          return v;
-        })
-      );
-    }
     return data?.pages.flatMap((page) => page.data.notifications);
-  }, [data?.pages, isOpen]);
+  }, [data?.pages]);
 
   if (isPending) {
     return (
@@ -57,7 +53,7 @@ function UserNotification() {
   }
 
   return (
-    <Popover onOpenChange={(v) => setIsOpen(v)}>
+    <Popover>
       <PopoverTrigger className="relative">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -90,14 +86,56 @@ function UserNotification() {
           {notifications &&
             notifications.length > 0 &&
             notifications.map((v) => (
-              <Link to={`/post/${v.post._id}`} key={v._id}>
+              <span
+                className={cn(
+                  "relative hover:cursor-pointer",
+                  readNotification.isPending ? "opacity-70" : "opacity-100"
+                )}
+                onClick={() =>
+                  readNotification.mutate({
+                    notificationID: v._id,
+                    postID: v.post._id,
+                  })
+                }
+                key={v._id}
+              >
                 {v.type === "comment" && <CommentNotification v={v} />}
                 {v.type === "postUpvote" && <UpvoteNotification v={v} />}
                 {v.type === "postDownvote" && <DownvoteNotification v={v} />}
                 {v.type === "reply" && <CommentReplyNotification v={v} />}
+                {!v.read && (
+                  <span className="absolute top-[45%] right-4">
+                    <Circle
+                      className="size-[0.6rem]"
+                      color="#52A8FF"
+                      fill="#52A8FF"
+                    />
+                  </span>
+                )}
                 <Separator />
-              </Link>
+              </span>
             ))}
+          {notifications && notifications.length >= 10 && (
+            <>
+              <div className="mx-auto w-max py-4">
+                {isError && (
+                  <Badge variant={"destructive"}>Nothing more to load</Badge>
+                )}
+                {!isError && (
+                  <Button
+                    disabled={isFetchingNextPage || isError}
+                    onClick={() => fetchNextPage()}
+                    size={"sm"}
+                    variant={"ghost"}
+                    className={"text-xs w-max"}
+                  >
+                    {isFetchingNextPage && "Loading notifications..."}
+                    {!isFetchingNextPage && "Load more notifications"}
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
           {!notifications && (
             <div className="h-72 flex items-center justify-center">
               <div className="flex flex-col gap-2 items-center justify-center">

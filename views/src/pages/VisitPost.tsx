@@ -182,7 +182,7 @@ function Comments() {
     <div className="mt-4 flex flex-col gap-4">
       {parentComments["null"].length > 0 &&
         parentComments["null"].map((comment) => (
-          <Card className="p-4" key={comment._id}>
+          <Card className="p-4 !bg-stone-900" key={comment._id}>
             <Comment
               comment={comment}
               commentID={comment._id}

@@ -18,7 +18,7 @@ function useSavePost() {
     onSuccess: async (data) => {
       toast.info(data.data.message);
 
-      await queryClient.cancelQueries({
+      await queryClient.fetchQuery({
         queryKey: ["your-saved-posts"],
       });
 

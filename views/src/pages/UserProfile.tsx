@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { useForm } from "react-hook-form";
 import { TEditProfile, ZodEditProfileSchema } from "@/validation/schemas";
@@ -135,7 +135,7 @@ function EditProfileDialog() {
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <ProfileForm />
+        <ProfileForm setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   );
@@ -158,15 +158,21 @@ function EditProfileDrawer() {
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="pt-2">
-          <ProfileForm className="px-4" />
+          <ProfileForm className="px-4" setOpen={setOpen} />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
 }
 
-function ProfileForm({ className }: React.ComponentProps<"form">) {
-  const { mutate, isPending } = useEditProfile();
+function ProfileForm({
+  className,
+  setOpen,
+}: {
+  className?: string;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { mutate, isPending, isSuccess } = useEditProfile();
   const {
     handleSubmit,
     register,
@@ -181,6 +187,12 @@ function ProfileForm({ className }: React.ComponentProps<"form">) {
     mode: "onChange",
     resolver: zodResolver(ZodEditProfileSchema),
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+    }
+  }, [isSuccess, setOpen]);
 
   function editProfile(values: TEditProfile) {
     mutate(values);

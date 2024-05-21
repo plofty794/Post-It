@@ -27,6 +27,9 @@ function useEditProfile() {
       queryClient.invalidateQueries({
         queryKey: ["profile", username],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["your-posts"],
+      });
     },
   });
 }

@@ -678,6 +678,10 @@ video {
   top: 1rem;
 }
 
+.top-\[45\%\]{
+  top: 45%;
+}
+
 .top-\[50\%\]{
   top: 50%;
 }
@@ -1308,6 +1312,11 @@ video {
   background-color: rgb(220 38 38 / var(--tw-bg-opacity)) !important;
 }
 
+.\!bg-stone-900{
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(28 25 23 / var(--tw-bg-opacity)) !important;
+}
+
 .\!bg-transparent{
   background-color: transparent !important;
 }
@@ -1329,11 +1338,6 @@ video {
 .bg-red-500{
   --tw-bg-opacity: 1;
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
-}
-
-.bg-red-600{
-  --tw-bg-opacity: 1;
-  background-color: rgb(220 38 38 / var(--tw-bg-opacity));
 }
 
 .bg-slate-100{
@@ -1368,21 +1372,6 @@ video {
 .bg-white{
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-stone-400{
-  --tw-bg-opacity: 1;
-  background-color: rgb(168 162 158 / var(--tw-bg-opacity));
-}
-
-.bg-stone-600{
-  --tw-bg-opacity: 1;
-  background-color: rgb(87 83 78 / var(--tw-bg-opacity));
-}
-
-.bg-stone-800{
-  --tw-bg-opacity: 1;
-  background-color: rgb(41 37 36 / var(--tw-bg-opacity));
 }
 
 .fill-current{
@@ -1490,6 +1479,11 @@ video {
 .py-2{
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.py-4{
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .pb-0{
@@ -1641,6 +1635,10 @@ video {
 
 .underline-offset-4{
   text-underline-offset: 4px;
+}
+
+.opacity-100{
+  opacity: 1;
 }
 
 .opacity-60{
@@ -1945,6 +1943,10 @@ blockquote {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.hover\:cursor-pointer:hover{
+  cursor: pointer;
+}
+
 .hover\:\!bg-green-600:hover{
   --tw-bg-opacity: 1 !important;
   background-color: rgb(22 163 74 / var(--tw-bg-opacity)) !important;
@@ -1958,6 +1960,10 @@ blockquote {
 .hover\:\!bg-stone-600:hover{
   --tw-bg-opacity: 1 !important;
   background-color: rgb(87 83 78 / var(--tw-bg-opacity)) !important;
+}
+
+.hover\:\!bg-transparent:hover{
+  background-color: transparent !important;
 }
 
 .hover\:bg-\[\#292524\]:hover{
@@ -1987,17 +1993,17 @@ blockquote {
   background-color: rgb(245 245 244 / 0.8);
 }
 
+.hover\:bg-stone-800:hover{
+  --tw-bg-opacity: 1;
+  background-color: rgb(41 37 36 / var(--tw-bg-opacity));
+}
+
 .hover\:bg-stone-900\/80:hover{
   background-color: rgb(28 25 23 / 0.8);
 }
 
 .hover\:bg-stone-900\/90:hover{
   background-color: rgb(28 25 23 / 0.9);
-}
-
-.hover\:bg-stone-800:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(41 37 36 / var(--tw-bg-opacity));
 }
 
 .hover\:\!text-red-600:hover{
@@ -2581,13 +2587,6 @@ blockquote {
 
   .sm\:text-left{
     text-align: left;
-  }
-}
-
-@media (min-width: 1536px){
-  .\32xl\:border-x{
-    border-left-width: 1px;
-    border-right-width: 1px;
   }
 }
 

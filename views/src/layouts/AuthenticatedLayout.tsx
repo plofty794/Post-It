@@ -22,15 +22,19 @@ function AuthenticatedLayout() {
     );
 
     source.addEventListener("new-notification", (e) => {
+      console.log(e);
       if (data?.data._id === (e.data as string).split("=")[1]) {
         queryClient.invalidateQueries({
           queryKey: ["your-notifications"],
+          refetchType: "all",
         });
         queryClient.invalidateQueries({
           queryKey: ["your-posts"],
+          refetchType: "all",
         });
         queryClient.invalidateQueries({
           queryKey: ["posts"],
+          refetchType: "all",
         });
       }
     });
@@ -39,34 +43,36 @@ function AuthenticatedLayout() {
   return (
     <>
       <main className="dark:bg-[#09090B] dark:text-white">
-        <div className="w-full flex justify-between items-center px-6 pt-4 pb-2">
-          <Link className="flex items-center justify-center gap-2" to={"/"}>
-            <Card className="rounded-md overflow-hidden w-max">
-              <img
-                src="/post it logo.jpg"
-                className="size-10 hover:scale-110 transition-transform object-cover"
+        <div className="2xl:container">
+          <div className="w-full flex justify-between items-center px-6 pt-4 pb-2">
+            <Link className="flex items-center justify-center gap-2" to={"/"}>
+              <Card className="rounded-md overflow-hidden w-max">
+                <img
+                  src="/post it logo.jpg"
+                  className="size-10 hover:scale-110 transition-transform object-cover"
+                />
+              </Card>
+              <h1 className="logo text-2xl font-medium">Post It</h1>
+            </Link>
+            <div className="flex items-center justify-center gap-4">
+              <CreatePostDialog />
+              <UserNotification />
+              <PopoverMenu
+                username={data?.data.username}
+                profilePicUrl={data?.data.profilePicUrl}
               />
-            </Card>
-            <h1 className="logo text-2xl font-medium">Post It</h1>
-          </Link>
-          <div className="flex items-center justify-center gap-4">
-            <CreatePostDialog />
-            <UserNotification />
-            <PopoverMenu
-              username={data?.data.username}
-              profilePicUrl={data?.data.profilePicUrl}
-            />
-          </div>
-        </div>
-        <Separator />
-        <div className="2xl:container 2xl:border-x min-h-screen w-3/4 mx-auto max-md:w-full">
-          {isPending && (
-            <div className="w-max mx-auto mt-24">
-              <l-ping size="55" speed="2" color="white"></l-ping>
             </div>
-          )}
+          </div>
+          <Separator />
+          <div className="min-h-screen w-3/4 mx-auto max-md:w-full">
+            {isPending && (
+              <div className="w-max mx-auto mt-24">
+                <l-ping size="55" speed="2" color="white"></l-ping>
+              </div>
+            )}
 
-          {!isPending && <Outlet />}
+            {!isPending && <Outlet />}
+          </div>
         </div>
       </main>
     </>

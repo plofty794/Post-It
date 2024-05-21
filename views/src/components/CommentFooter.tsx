@@ -1,48 +1,30 @@
-import {
-  ReplyIcon,
-  ArrowBigUpDashIcon,
-  ArrowBigDownDashIcon,
-} from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { ArrowBigUpDashIcon, ArrowBigDownDashIcon } from "lucide-react";
 import PostComment from "./PostComment";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
 import { Toggle } from "@/components/ui/toggle";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { Button } from "./ui/button";
 
 function CommentFooter({ commentID }: { commentID: string }) {
+  const [isCommentInputOpen, setIsCommentInputOpen] = useState(false);
   return (
-    <div className="flex items-center gap-2">
-      <CommentUpvoteAndDownvote />
-      <Collapsible>
-        <CollapsibleTrigger>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <ReplyIcon className="size-4 " />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">Reply</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="mt-2">
-            <PostComment commentID={commentID} />
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
-    </div>
+    <>
+      <div className="flex items-center gap-2">
+        <CommentUpvoteAndDownvote />
+        <Toggle
+          className="hover:!bg-transparent !bg-transparent"
+          asChild
+          onPressedChange={(v) => setIsCommentInputOpen(v)}
+        >
+          <Button size={"sm"} variant={"link"} className="p-0 text-xs">
+            Reply
+          </Button>
+        </Toggle>
+      </div>
+      <div className={cn("mt-2", isCommentInputOpen ? "block" : " hidden")}>
+        <PostComment commentID={commentID} />
+      </div>
+    </>
   );
 }
 
@@ -51,7 +33,7 @@ function CommentUpvoteAndDownvote() {
   const [downvotePressed, setDownvotePressed] = useState(false);
 
   return (
-    <>
+    <div className="flex items-center gap-2">
       <Toggle
         pressed={upvotePressed}
         onPressedChange={(v) => {
@@ -89,7 +71,7 @@ function CommentUpvoteAndDownvote() {
       >
         <ArrowBigDownDashIcon className="size-5" />
       </Toggle>
-    </>
+    </div>
   );
 }
 

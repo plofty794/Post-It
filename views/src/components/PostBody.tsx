@@ -14,7 +14,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import useCreatePost from "@/hooks/auth/useCreatePost";
 import MenuBar from "./MenuBar";
@@ -40,13 +40,17 @@ const extensions = [
   }),
 ];
 
-const PostBody = () => {
+function PostBody({
+  setOpen,
+}: {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [title, setTitle] = useState("");
 
   return (
     <EditorProvider
       slotBefore={<BlogTitle title={title} setTitle={setTitle} />}
-      slotAfter={<Footer title={title} setTitle={setTitle} />}
+      slotAfter={<Footer title={title} setTitle={setTitle} setOpen={setOpen} />}
       extensions={extensions}
     >
       <BubbleMenu tippyOptions={{ duration: 100 }}>
@@ -56,7 +60,7 @@ const PostBody = () => {
       </BubbleMenu>
     </EditorProvider>
   );
-};
+}
 
 function BlogTitle({
   title,
@@ -112,12 +116,20 @@ function BlogTitle({
 function Footer({
   title,
   setTitle,
+  setOpen,
 }: {
   title: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const { mutate } = useCreatePost();
+  const { mutate, isSuccess } = useCreatePost();
   const { editor } = useCurrentEditor();
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+    }
+  }, [isSuccess, setOpen]);
 
   function createPost() {
     mutate({ title, body: editor?.getHTML() });
