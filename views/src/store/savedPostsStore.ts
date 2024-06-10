@@ -1,4 +1,4 @@
-import { TSavedPost } from "@/hooks/auth/useGetYourSavedPosts";
+import { TSavedPost } from "@/hooks/auth/posts/useGetYourSavedPosts";
 import { create } from "zustand";
 
 export const savedPostsStore = create<SavedPostsState & SavedPostsAction>(

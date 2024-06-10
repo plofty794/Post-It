@@ -94,6 +94,7 @@ function YourComment({
                 }}
               ></div>
               <CommentFooter
+                postID={comment.post._id}
                 isReplyALink={true}
                 isDownvotedByYou={
                   comment.downvotes.find((v) => v === yourProfileData?.data._id)
@@ -181,6 +182,7 @@ function YourComment({
               }}
             ></div>
             <CommentFooter
+              postID={comment.post._id}
               isReplyALink={true}
               isDownvotedByYou={
                 comment.downvotes.find((v) => v === yourProfileData?.data._id)
