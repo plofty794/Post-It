@@ -1,4 +1,4 @@
-import { THiddenPost } from "@/hooks/auth/useGetYourHiddenPosts";
+import { THiddenPost } from "@/hooks/auth/posts/useGetYourHiddenPosts";
 import { create } from "zustand";
 
 export const hiddenPostsStore = create<HiddenPostsState & HiddenPostsAction>(

@@ -1,6 +1,6 @@
 import { TProfilePic } from "@/components/AvatarDropZone";
 import { useMutation } from "@tanstack/react-query";
-import useChangeAvatar from "../useChangeAvatar";
+import useChangeAvatar from "../users/useChangeAvatar";
 import { toast } from "sonner";
 
 type TUploadAvatar = {

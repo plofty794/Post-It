@@ -56,7 +56,7 @@ function useAxiosPrivate() {
       axiosPrivateRoute.interceptors.response.eject(responseInterceptor);
       axiosPrivateRoute.interceptors.request.eject(requestInterceptor);
     };
-  }, [refreshAccessToken, setToken, token]);
+  }, [logOut, refreshAccessToken, setToken, token]);
 
   return axiosPrivateRoute;
 }

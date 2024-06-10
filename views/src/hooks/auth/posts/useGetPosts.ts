@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { TUser } from "./useGetUser";
+import { TUser } from "../users/useGetUser";
 import useAxiosPrivate from "@/api/useAxiosPrivate";
 
 function useGetPosts() {

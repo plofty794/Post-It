@@ -10,7 +10,7 @@ function useLogin() {
 
   return useMutation({
     mutationFn: async (data: TLogin) => {
-      return await axiosPrivateRoute.post("/login", {
+      return await axiosPrivateRoute.post("/users/login", {
         ...data,
       });
     },

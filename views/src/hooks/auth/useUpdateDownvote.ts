@@ -9,29 +9,37 @@ function useUpdateDownvote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ postID }: { postID: string }) => {
-      return await axiosPrivateRoute.post("/downvote", {
-        postID,
-      });
+    mutationFn: async ({
+      postID,
+      commentID,
+    }: {
+      postID?: string;
+      commentID?: string;
+    }) => {
+      if (commentID) {
+        return await axiosPrivateRoute.post(`/comments/downvote/${commentID}`);
+      }
+      return await axiosPrivateRoute.post(`/posts/downvote/${postID}`);
     },
     onError(err) {
       const error = ((err as AxiosError).response as AxiosResponse).data.error;
       toast.error(error);
     },
     onSettled() {
-      if (postID) {
-        queryClient.invalidateQueries({
-          queryKey: ["post", postID],
-          refetchType: "all",
-        });
-      }
       queryClient.invalidateQueries({
         queryKey: ["posts"],
-        refetchType: "all",
       });
       queryClient.invalidateQueries({
         queryKey: ["your-posts"],
-        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["post", postID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-comments"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["comments", postID],
       });
     },
   });

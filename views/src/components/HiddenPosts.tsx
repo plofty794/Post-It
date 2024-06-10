@@ -19,10 +19,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { THiddenPost, THiddenPosts } from "@/hooks/auth/useGetYourHiddenPosts";
-import useUnhidePost from "@/hooks/auth/useUnHidePost";
+import {
+  THiddenPost,
+  THiddenPosts,
+} from "@/hooks/auth/posts/useGetYourHiddenPosts";
+import useUnhidePost from "@/hooks/auth/posts/useUnHidePost";
 import PostFooter from "./PostFooter";
-import { TUserData } from "@/hooks/auth/useGetUser";
+import { TUserData } from "@/hooks/auth/users/useGetUser";
 
 function HiddenPosts({
   hiddenPosts,
@@ -47,7 +50,7 @@ function HiddenPosts({
 
   useEffect(() => {
     if (error != null) return;
-    if (isIntersecting) {
+    if (isIntersecting && hiddenPosts.length >= 10) {
       fetchNextPage();
     }
   }, [error, fetchNextPage, isIntersecting, hiddenPosts.length]);

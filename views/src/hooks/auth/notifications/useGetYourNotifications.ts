@@ -1,15 +1,18 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { TPost } from "./useGetPosts";
-import { TUser } from "./useGetUser";
+import { TPost } from "../posts/useGetPosts";
+import { TUser } from "../users/useGetUser";
 
 function useGetYourNotifications() {
   return useInfiniteQuery({
     queryKey: ["your-notifications"],
     queryFn: async ({ pageParam = 1 }): Promise<TNotifications> => {
-      return await axiosPrivateRoute.get(`/user/notifications/${pageParam}`, {
-        signal: AbortSignal.timeout(1000 * 60),
-      });
+      return await axiosPrivateRoute.get(
+        `/users/user/notifications/${pageParam}`,
+        {
+          signal: AbortSignal.timeout(1000 * 60),
+        }
+      );
     },
     initialPageParam: 1,
     getNextPageParam: (_, page) => page.length + 1,

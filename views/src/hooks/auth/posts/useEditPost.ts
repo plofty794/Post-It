@@ -3,11 +3,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
 
-function useCreatePost() {
+function useEditPost() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ title, body }: { title: string; body?: string }) => {
-      return axiosPrivateRoute.post("/create-post", {
+    mutationFn: async ({
+      postID,
+      title,
+      body,
+    }: {
+      postID?: string;
+      title: string;
+      body?: string;
+    }) => {
+      return axiosPrivateRoute.patch(`/posts/edit-post/${postID}`, {
         title,
         body,
       });
@@ -19,12 +27,15 @@ function useCreatePost() {
       const error = ((err as AxiosError).response as AxiosResponse).data.error;
       toast.error(error);
     },
-    onSettled() {
+    onSettled(_, __, { postID }) {
       queryClient.invalidateQueries({
         queryKey: ["posts"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["post", postID],
       });
     },
   });
 }
 
-export default useCreatePost;
+export default useEditPost;

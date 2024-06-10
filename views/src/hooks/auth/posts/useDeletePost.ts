@@ -1,18 +1,13 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
-import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 
-function useChangeAvatar() {
-  const navigate = useNavigate();
-  const { username } = useParams();
+function useDeletePost() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (profilePicUrl: string) => {
-      return await axiosPrivateRoute.post("/change-avatar", {
-        profilePicUrl,
-      });
+    mutationFn: async ({ postID }: { postID: string }) => {
+      return await axiosPrivateRoute.delete(`/posts/delete-post/${postID}`);
     },
     onSuccess(data) {
       toast.success(data.data.message);
@@ -22,15 +17,24 @@ function useChangeAvatar() {
       toast.error(error);
     },
     onSettled() {
-      navigate(`/user/${username}`);
       queryClient.invalidateQueries({
-        queryKey: ["profile", username],
+        queryKey: ["posts"],
+        refetchType: "all",
       });
       queryClient.invalidateQueries({
-        queryKey: ["your-profile"],
+        queryKey: ["your-posts"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-saved-posts"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-hidden-posts"],
+        refetchType: "all",
       });
     },
   });
 }
 
-export default useChangeAvatar;
+export default useDeletePost;

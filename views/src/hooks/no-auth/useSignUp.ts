@@ -10,7 +10,7 @@ function useSignUp() {
 
   return useMutation({
     mutationFn: async (data: TEmailVerificationCode) => {
-      return await axiosPrivateRoute.post("/sign-up", {
+      return await axiosPrivateRoute.post("/users/sign-up", {
         ...data,
       });
     },

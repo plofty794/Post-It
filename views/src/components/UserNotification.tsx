@@ -1,6 +1,6 @@
 import useGetYourNotifications, {
   TNotification,
-} from "@/hooks/auth/useGetYourNotifications";
+} from "@/hooks/auth/notifications/useGetYourNotifications";
 import {
   Popover,
   PopoverContent,
@@ -19,7 +19,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { CardDescription } from "./ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Separator } from "./ui/separator";
-import useReadNotification from "@/hooks/auth/useReadNotification";
+import useReadNotification from "@/hooks/auth/notifications/useReadNotification";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import useGetUser from "@/hooks/auth/useGetUser";
+import useGetUser, { TUser } from "@/hooks/auth/users/useGetUser";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,10 +32,11 @@ import { TEditProfile, ZodEditProfileSchema } from "@/validation/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ErrorMessage } from "@/lib/custom/utils";
 import AvatarDropzone from "@/components/AvatarDropZone";
-import useEditProfile from "@/hooks/auth/useEditProfile";
+import useEditProfile from "@/hooks/auth/users/useEditProfile";
 import ProfileTabs from "@/components/ProfileTabs";
 
 function UserProfile() {
+  const [open, setOpen] = useState(false);
   const matches = useMediaQuery("(min-width: 768px)");
   const { data, isPending } = useGetUser();
 
@@ -59,7 +60,7 @@ function UserProfile() {
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-2 right-0 z-10 ">
-                  <Dialog>
+                  <Dialog open={open} onOpenChange={(v) => setOpen(v)}>
                     <DialogTrigger className="w-max" asChild>
                       <Button
                         className="rounded-full p-2"
@@ -94,7 +95,7 @@ function UserProfile() {
                         </DialogTitle>
                       </DialogHeader>
                       <Separator />
-                      <AvatarDropzone />
+                      <AvatarDropzone setOpen={setOpen} />
                     </DialogContent>
                   </Dialog>
                 </div>
@@ -108,7 +109,11 @@ function UserProfile() {
             </>
           )}
         </div>
-        {matches ? <EditProfileDialog /> : <EditProfileDrawer />}
+        {matches ? (
+          <EditProfileDialog data={data?.data} />
+        ) : (
+          <EditProfileDrawer data={data?.data} />
+        )}
       </div>
       <Separator className="mt-8" />
       <div className="pt-8 pb-16 w-full">
@@ -118,7 +123,7 @@ function UserProfile() {
   );
 }
 
-function EditProfileDialog() {
+function EditProfileDialog({ data }: { data: TUser | undefined }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -135,13 +140,13 @@ function EditProfileDialog() {
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <ProfileForm setOpen={setOpen} />
+        <ProfileForm data={data} setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   );
 }
 
-function EditProfileDrawer() {
+function EditProfileDrawer({ data }: { data: TUser | undefined }) {
   const [open, setOpen] = useState(false);
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -158,7 +163,7 @@ function EditProfileDrawer() {
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="pt-2">
-          <ProfileForm className="px-4" setOpen={setOpen} />
+          <ProfileForm data={data} className="px-4" setOpen={setOpen} />
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
@@ -168,9 +173,11 @@ function EditProfileDrawer() {
 function ProfileForm({
   className,
   setOpen,
+  data,
 }: {
   className?: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  data: TUser | undefined;
 }) {
   const { mutate, isPending, isSuccess } = useEditProfile();
   const {
@@ -180,9 +187,9 @@ function ProfileForm({
     reset,
   } = useForm<TEditProfile>({
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      username: "",
+      firstName: data?.firstName,
+      lastName: data?.lastName,
+      username: data?.username,
     },
     mode: "onChange",
     resolver: zodResolver(ZodEditProfileSchema),

@@ -40,13 +40,23 @@ function useReadNotification() {
       if (isRead && isRead.read === true) return;
 
       return await axiosPrivateRoute.patch(
-        `/user/read-notification/${notificationID}`
+        `/users/user/read-notification/${notificationID}`
       );
     },
     onSuccess: async (_, { notificationID, postID }) => {
       await queryClient.cancelQueries({
         queryKey: ["your-notifications"],
       });
+
+      const notifications = queryClient.getQueryData<
+        InfiniteData<TNotifications, unknown>
+      >(["your-notifications"]);
+
+      if (!notifications) return;
+
+      const _notifications = notifications.pages.flatMap(
+        (page) => page.data.notifications
+      );
 
       queryClient.setQueryData(
         ["your-notifications"],
@@ -76,7 +86,15 @@ function useReadNotification() {
         }
       );
 
-      postID && navigate(`/post/${postID}`);
+      const notification = _notifications.find((v) => v._id === notificationID);
+
+      if (!notification) return;
+
+      if (notification.type !== "comment" && notification.type !== "reply") {
+        postID && navigate(`/post/${postID}`);
+      } else {
+        navigate(`/comment/${notification.data}`);
+      }
     },
     onError(err) {
       const error = ((err as AxiosError).response as AxiosResponse).data.error;

@@ -8,15 +8,19 @@ import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
 import { TSavedPosts } from "./useGetYourSavedPosts";
 
-function useUnsavePost() {
+function useSavePost() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async ({ postID }: { postID?: string }) => {
-      return await axiosPrivateRoute.post(`/unsave-post/${postID}`);
+    mutationFn: async ({ postID }: { postID: string }) => {
+      return await axiosPrivateRoute.post(`/posts/save-post/${postID}`);
     },
-    onSuccess(data, { postID }) {
+    onSuccess: async (data) => {
       toast.info(data.data.message);
-      if (typeof postID == "undefined") return;
+
+      await queryClient.fetchQuery({
+        queryKey: ["your-saved-posts"],
+      });
 
       queryClient.setQueryData(
         ["your-saved-posts"],
@@ -27,11 +31,10 @@ function useUnsavePost() {
             pages: [
               {
                 data: {
-                  savedPosts: oldData.pages.flatMap((page) =>
-                    page.data.savedPosts.filter((post) => {
-                      return post.post._id != postID;
-                    })
-                  ),
+                  savedPosts: [
+                    data.data.savedPost,
+                    ...oldData.pages.flatMap((page) => page.data.savedPosts),
+                  ],
                 },
               },
             ],
@@ -61,4 +64,4 @@ function useUnsavePost() {
   });
 }
 
-export default useUnsavePost;
+export default useSavePost;

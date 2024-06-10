@@ -6,9 +6,12 @@ function useGetYourHiddenPosts() {
   return useInfiniteQuery({
     queryKey: ["your-hidden-posts"],
     queryFn: async ({ pageParam = 1 }): Promise<THiddenPosts> => {
-      return await axiosPrivateRoute.get(`/your-hidden-posts/${pageParam}`, {
-        signal: AbortSignal.timeout(1000 * 60),
-      });
+      return await axiosPrivateRoute.get(
+        `/posts/your-hidden-posts/${pageParam}`,
+        {
+          signal: AbortSignal.timeout(1000 * 60),
+        }
+      );
     },
     initialPageParam: 1,
     getNextPageParam: (_, page) => page.length + 1,

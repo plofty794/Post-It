@@ -1,8 +1,8 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { TUser } from "./useGetUser";
-import { TPost } from "./useGetPosts";
+import { TUser } from "../users/useGetUser";
+import { TPost } from "../posts/useGetPosts";
 
 function useGetPostComments() {
   const { postID } = useParams();
@@ -40,10 +40,14 @@ export type TComment = {
   author: TUser;
   content: string;
   createdAt: string;
-  parentComment: null;
+  parentComment: null | TComment;
   post: TPost;
   replies: TComment[];
   updatedAt: string;
+  upvoteCount: number;
+  downvoteCount: number;
+  upvotes: string[];
+  downvotes: string[];
   _id: string;
 };
 

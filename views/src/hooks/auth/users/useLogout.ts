@@ -7,7 +7,7 @@ function useLogout() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      return await axiosPrivateRoute.delete("/logout");
+      return await axiosPrivateRoute.delete("/users/logout");
     },
     onSettled() {
       queryClient.removeQueries();

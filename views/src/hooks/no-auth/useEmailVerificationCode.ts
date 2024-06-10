@@ -6,7 +6,7 @@ import { toast } from "sonner";
 function useEmailVerificationCode() {
   return useMutation({
     mutationFn: async ({ email }: { email: string }) => {
-      return await axiosPrivateRoute.post("/verification-code", {
+      return await axiosPrivateRoute.post("/users/verification-code", {
         email,
       });
     },

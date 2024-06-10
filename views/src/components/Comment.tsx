@@ -4,7 +4,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { TComment } from "@/hooks/auth/useGetPostComments";
+import { TComment } from "@/hooks/auth/comments/useGetPostComments";
 import { useState } from "react";
 import { Card, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,6 +12,8 @@ import { Circle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { sanitizeHTML } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { TUserData } from "@/hooks/auth/users/useGetUser";
+import { useQueryClient } from "@tanstack/react-query";
 
 function Comment({
   comment,
@@ -22,6 +24,8 @@ function Comment({
   commentID: string;
   getReplies: (commentID: string) => TComment[];
 }) {
+  const queryClient = useQueryClient();
+  const yourProfileData = queryClient.getQueryData<TUserData>(["your-profile"]);
   const [isRepliesOpen, setIsRepliesOpen] = useState(false);
 
   return (
@@ -53,12 +57,27 @@ function Comment({
             </div>
           </div>
           <div
-            className="text-sm"
+            className="mt-4 text-sm"
             dangerouslySetInnerHTML={{
               __html: sanitizeHTML(comment?.content),
             }}
           ></div>
-          <CommentFooter commentID={comment?._id} />
+          <CommentFooter
+            postID={comment.post._id}
+            isReplyALink={false}
+            upvoteCount={comment.upvoteCount}
+            isUpvotedByYou={
+              comment.upvotes.find((v) => v === yourProfileData?.data._id)
+                ? true
+                : false
+            }
+            isDownvotedByYou={
+              comment.downvotes.find((v) => v === yourProfileData?.data._id)
+                ? true
+                : false
+            }
+            commentID={comment?._id}
+          />
           {comment.replies.length > 0 && (
             <Collapsible onOpenChange={(open) => setIsRepliesOpen(open)}>
               <CollapsibleTrigger>

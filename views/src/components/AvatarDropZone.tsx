@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import useUploadAvatar from "@/hooks/auth/services/useUploadAvatar";
@@ -15,8 +15,12 @@ export interface TProfilePic extends File {
   preview?: string;
 }
 
-function AvatarDropzone() {
-  const { mutate, isPending } = useUploadAvatar();
+function AvatarDropzone({
+  setOpen,
+}: {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { mutate, isPending, isSuccess } = useUploadAvatar();
   const [profilePic, setProfilePic] = useState<TProfilePic | null>(null);
   const onDrop = useCallback(
     (acceptedFiles: TProfilePic[]) => {
@@ -31,6 +35,12 @@ function AvatarDropzone() {
     },
     [profilePic?.name]
   );
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+    }
+  }, [isSuccess, setOpen]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

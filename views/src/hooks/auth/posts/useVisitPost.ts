@@ -1,16 +1,16 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { TPost } from "./useGetPosts";
 import { AxiosResponse } from "axios";
+import { TPost } from "./useGetPosts";
 
-function useVisitPost() {
+function useVisitPost(id?: string) {
   const { postID } = useParams();
 
   return useQuery({
-    queryKey: ["post", postID],
+    queryKey: ["post", id ?? postID],
     queryFn: async (): Promise<AxiosResponse<{ post: TPost }>> => {
-      return await axiosPrivateRoute.get(`/post/${postID}`);
+      return await axiosPrivateRoute.get(`/posts/post/${id ?? postID}`);
     },
     refetchOnMount: false,
     refetchOnWindowFocus: false,

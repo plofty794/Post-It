@@ -7,7 +7,7 @@ function useGetProfile() {
   return useQuery({
     queryKey: ["your-profile"],
     queryFn: async (): Promise<TUserData> => {
-      return await axiosPrivateRoute.get("/me", {
+      return await axiosPrivateRoute.get("/users/me", {
         signal: AbortSignal.timeout(1000 * 60),
       });
     },

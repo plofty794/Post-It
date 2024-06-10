@@ -1,8 +1,8 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { TSavedPost } from "./useGetYourSavedPosts";
-import { TPost } from "./useGetPosts";
+import { TSavedPost } from "../posts/useGetYourSavedPosts";
+import { TPost } from "../posts/useGetPosts";
 
 function useGetUser() {
   const { username } = useParams();
@@ -10,7 +10,7 @@ function useGetUser() {
   return useQuery({
     queryKey: ["profile", username],
     queryFn: async (): Promise<TUserData> => {
-      return await axiosPrivateRoute.get(`/user/${username}`, {
+      return await axiosPrivateRoute.get(`/users/user/${username}`, {
         signal: AbortSignal.timeout(1000 * 60),
       });
     },

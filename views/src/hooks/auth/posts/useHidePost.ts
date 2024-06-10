@@ -13,7 +13,7 @@ function useHidePost() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ postID }: { postID: string }) => {
-      return await axiosPrivateRoute.post(`/hide-post/${postID}`);
+      return await axiosPrivateRoute.post(`/posts/hide-post/${postID}`);
     },
     onSuccess: async (data, { postID }) => {
       toast.info(data.data.message);

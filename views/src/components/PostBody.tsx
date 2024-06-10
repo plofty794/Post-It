@@ -1,4 +1,9 @@
-import { EditorProvider, BubbleMenu, useCurrentEditor } from "@tiptap/react";
+import {
+  EditorProvider,
+  BubbleMenu,
+  useCurrentEditor,
+  Editor,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Color } from "@tiptap/extension-color";
 import ListItem from "@tiptap/extension-list-item";
@@ -16,8 +21,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
-import useCreatePost from "@/hooks/auth/useCreatePost";
+import useCreatePost from "@/hooks/auth/posts/useCreatePost";
 import MenuBar from "./MenuBar";
+import useEditPost from "@/hooks/auth/posts/useEditPost";
 
 const limit = 1500;
 
@@ -49,6 +55,7 @@ function PostBody({
 
   return (
     <EditorProvider
+      editable
       slotBefore={<BlogTitle title={title} setTitle={setTitle} />}
       slotAfter={<Footer title={title} setTitle={setTitle} setOpen={setOpen} />}
       extensions={extensions}
@@ -62,7 +69,7 @@ function PostBody({
   );
 }
 
-function BlogTitle({
+export function BlogTitle({
   title,
   setTitle,
 }: {
@@ -113,17 +120,43 @@ function BlogTitle({
   );
 }
 
-function Footer({
+export function Footer({
   title,
   setTitle,
   setOpen,
+  postID,
+}: {
+  title: string;
+  postID?: string;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { editor } = useCurrentEditor();
+
+  return postID ? (
+    <EditPost setOpen={setOpen} title={title} editor={editor} postID={postID} />
+  ) : (
+    <CreatePost
+      setOpen={setOpen}
+      setTitle={setTitle}
+      title={title}
+      editor={editor}
+    />
+  );
+}
+
+function CreatePost({
+  title,
+  setTitle,
+  setOpen,
+  editor,
 }: {
   title: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  editor: Editor | null;
 }) {
   const { mutate, isSuccess } = useCreatePost();
-  const { editor } = useCurrentEditor();
 
   useEffect(() => {
     if (isSuccess) {
@@ -179,6 +212,63 @@ function Footer({
           Post
         </Button>
       </div>
+    </>
+  );
+}
+
+function EditPost({
+  title,
+  postID,
+  setOpen,
+  editor,
+}: {
+  title: string;
+  postID?: string;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  editor: Editor | null;
+}) {
+  const { mutate, isSuccess } = useEditPost();
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+    }
+  }, [isSuccess, setOpen]);
+
+  function editPost() {
+    mutate({ title, body: editor?.getHTML(), postID });
+  }
+
+  return (
+    <>
+      <div className="flex flex-col gap-1 w-full">
+        <Badge
+          variant={
+            editor?.storage.characterCount.characters() >= limit
+              ? "destructive"
+              : "secondary"
+          }
+          className="w-max"
+        >
+          {editor?.storage.characterCount.characters()}/{limit} characters
+        </Badge>
+        <Badge variant={"secondary"} className="w-max">
+          {editor?.storage.characterCount.words()} words
+        </Badge>
+      </div>
+      <Button
+        className="w-max ml-auto"
+        onClick={() => editPost()}
+        disabled={
+          !editor?.getText().length ||
+          editor?.storage.characterCount.characters() >= limit ||
+          !title.length ||
+          title.length > 150
+        }
+        variant={"secondary"}
+      >
+        Save changes
+      </Button>
     </>
   );
 }

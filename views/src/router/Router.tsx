@@ -5,6 +5,7 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import SignUp from "@/pages/SignUp";
 import UserProfile from "@/pages/UserProfile";
+import VisitComment from "@/pages/VisitComment";
 import VisitPost from "@/pages/VisitPost";
 import { authStore } from "@/store/authStore";
 import {
@@ -38,6 +39,7 @@ function Router() {
           <Route path="/" element={<Home />} />
           <Route path="/user/:username" element={<UserProfile />} />
           <Route path="/post/:postID" element={<VisitPost />} />
+          <Route path="/comment/:commentID" element={<VisitComment />} />
         </Route>
       </>
     )

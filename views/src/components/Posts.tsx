@@ -1,4 +1,4 @@
-import { TPost, TPosts } from "@/hooks/auth/useGetPosts";
+import { TPost, TPosts } from "@/hooks/auth/posts/useGetPosts";
 import { sanitizeHTML } from "@/lib/utils";
 import {
   FetchNextPageOptions,
@@ -15,7 +15,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Circle } from "lucide-react";
 import PostDropdownMenu from "./PostDropdownMenu";
 import PostFooter from "./PostFooter";
-import { TUserData } from "@/hooks/auth/useGetUser";
+import { TUserData } from "@/hooks/auth/users/useGetUser";
 
 function Posts({
   posts,
@@ -40,7 +40,7 @@ function Posts({
 
   useEffect(() => {
     if (error != null) return;
-    if (isIntersecting) {
+    if (isIntersecting && posts.length >= 10) {
       fetchNextPage();
     }
   }, [error, fetchNextPage, isIntersecting, posts.length]);
@@ -104,6 +104,7 @@ function Posts({
               postID={post._id}
             />
           </div>
+
           {isFetchingNextPage && (
             <div className="p-4 w-max mx-auto">
               <svg

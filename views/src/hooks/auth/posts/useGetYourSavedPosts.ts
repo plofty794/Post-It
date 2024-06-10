@@ -6,9 +6,12 @@ function useGetYourSavedPosts() {
   return useInfiniteQuery({
     queryKey: ["your-saved-posts"],
     queryFn: async ({ pageParam = 1 }): Promise<TSavedPosts> => {
-      return await axiosPrivateRoute.get(`/your-saved-posts/${pageParam}`, {
-        signal: AbortSignal.timeout(1000 * 60),
-      });
+      return await axiosPrivateRoute.get(
+        `/posts/your-saved-posts/${pageParam}`,
+        {
+          signal: AbortSignal.timeout(1000 * 60),
+        }
+      );
     },
     initialPageParam: 1,
     getNextPageParam: (_, page) => page.length + 1,

@@ -1,14 +1,17 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { TPosts } from "./useGetPosts";
+import { TComment } from "./useGetPostComments";
 
-function useGetYourPosts() {
+function useGetYourComments() {
   return useInfiniteQuery({
-    queryKey: ["your-posts"],
-    queryFn: async ({ pageParam = 1 }): Promise<TPosts> => {
-      return await axiosPrivateRoute.get(`/your-posts/${pageParam}`, {
-        signal: AbortSignal.timeout(1000 * 60),
-      });
+    queryKey: ["your-comments"],
+    queryFn: async ({ pageParam = 1 }): Promise<TYourComments> => {
+      return await axiosPrivateRoute.get(
+        `/comments/your-comments/${pageParam}`,
+        {
+          signal: AbortSignal.timeout(1000 * 60),
+        }
+      );
     },
     initialPageParam: 1,
     getNextPageParam: (_, page) => page.length + 1,
@@ -27,4 +30,10 @@ function useGetYourPosts() {
   });
 }
 
-export default useGetYourPosts;
+export type TYourComments = {
+  data: {
+    yourComments: TComment[];
+  };
+};
+
+export default useGetYourComments;

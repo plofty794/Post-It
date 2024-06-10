@@ -7,7 +7,9 @@ function useRefreshAccessToken() {
   const userID = token?.split("~")[1];
   return async () => {
     try {
-      const { data } = await axiosPrivateRoute.post(`/refresh-token/${userID}`);
+      const { data } = await axiosPrivateRoute.post(
+        `/users/refresh-token/${userID}`
+      );
       return data.accessToken as string;
     } catch (error) {
       return error as AxiosError;

@@ -12,7 +12,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardDescription } from "./ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Circle } from "lucide-react";
-import { TSavedPost, TSavedPosts } from "@/hooks/auth/useGetYourSavedPosts";
+import {
+  TSavedPost,
+  TSavedPosts,
+} from "@/hooks/auth/posts/useGetYourSavedPosts";
 import { Button } from "./ui/button";
 import {
   Tooltip,
@@ -20,9 +23,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import useUnsavePost from "@/hooks/auth/useUnsavePost";
+import useUnsavePost from "@/hooks/auth/posts/useUnsavePost";
 import PostFooter from "./PostFooter";
-import { TUserData } from "@/hooks/auth/useGetUser";
+import { TUserData } from "@/hooks/auth/users/useGetUser";
 
 function SavedPosts({
   savedPosts,
@@ -47,7 +50,7 @@ function SavedPosts({
 
   useEffect(() => {
     if (error != null) return;
-    if (isIntersecting) {
+    if (isIntersecting && savedPosts.length >= 10) {
       fetchNextPage();
     }
   }, [error, fetchNextPage, isIntersecting, savedPosts.length]);

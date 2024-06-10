@@ -1,12 +1,15 @@
-import { EditorProvider, BubbleMenu, useCurrentEditor } from "@tiptap/react";
+import { EditorProvider, BubbleMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Color } from "@tiptap/extension-color";
 import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
-import { Button } from "./ui/button";
+import CharacterCount from "@tiptap/extension-character-count";
 import { Card } from "./ui/card";
+import { useState } from "react";
 import MenuBar from "./MenuBar";
-import useAddComment from "@/hooks/auth/comments/useAddComment";
+import { BlogTitle, Footer } from "./PostBody";
+
+const limit = 1500;
 
 // define your extension array
 const extensions = [
@@ -22,18 +25,37 @@ const extensions = [
       keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
     },
   }),
+  CharacterCount.configure({
+    limit,
+  }),
 ];
 
-function PostComment({
-  commentID,
+function EditPostDialog({
   postID,
+  setOpen,
+  postTitle,
+  postContent,
 }: {
-  commentID?: string;
   postID: string;
+  postTitle?: string;
+  postContent?: string;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const [title, setTitle] = useState(postTitle ?? "");
+
   return (
     <EditorProvider
-      slotAfter={<Footer postID={postID} commentID={commentID} />}
+      editable
+      content={postContent}
+      slotBefore={<BlogTitle title={title} setTitle={setTitle} />}
+      slotAfter={
+        <Footer
+          postID={postID}
+          title={title}
+          setTitle={setTitle}
+          setOpen={setOpen}
+        />
+      }
       extensions={extensions}
     >
       <BubbleMenu tippyOptions={{ duration: 100 }}>
@@ -45,35 +67,4 @@ function PostComment({
   );
 }
 
-function Footer({ commentID, postID }: { commentID?: string; postID: string }) {
-  const { editor } = useCurrentEditor();
-  const { mutate } = useAddComment();
-
-  function addComment() {
-    if (editor?.getHTML == null) return;
-    if (commentID) {
-      mutate({ content: editor.getHTML(), commentID, postID });
-    } else {
-      mutate({ content: editor.getHTML(), postID });
-    }
-    editor.commands.clearContent();
-  }
-
-  return (
-    <>
-      <div className="flex items-center justify-end mt-2">
-        <Button
-          className="text-xs"
-          onClick={() => addComment()}
-          disabled={!editor?.getText().length}
-          variant={"secondary"}
-          size={"sm"}
-        >
-          Add comment
-        </Button>
-      </div>
-    </>
-  );
-}
-
-export default PostComment;
+export default EditPostDialog;

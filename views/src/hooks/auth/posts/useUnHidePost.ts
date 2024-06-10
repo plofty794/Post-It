@@ -6,13 +6,13 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
-import { THiddenPosts } from "./useGetYourHiddenPosts";
+import { THiddenPosts } from "../posts/useGetYourHiddenPosts";
 
 function useUnhidePost() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ postID }: { postID: string }) => {
-      return await axiosPrivateRoute.post(`/unhide-post/${postID}`);
+      return await axiosPrivateRoute.post(`/posts/unhide-post/${postID}`);
     },
     onSuccess(data, { postID }) {
       toast.info(data.data.message);
