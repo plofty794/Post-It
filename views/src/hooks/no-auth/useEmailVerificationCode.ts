@@ -16,7 +16,7 @@ function useEmailVerificationCode() {
       });
     },
     onError(err) {
-      toast.error("Uh oh! Something went wrong", {
+      toast.error("Uh oh! Account creation failed", {
         description: ((err as AxiosError).response as AxiosResponse).data.error,
       });
     },

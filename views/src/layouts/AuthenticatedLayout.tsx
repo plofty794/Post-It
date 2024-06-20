@@ -18,7 +18,7 @@ function AuthenticatedLayout() {
 
   useEffect(() => {
     const source = new EventSource(
-      import.meta.env.VITE_DEV_SERVER_URL + "/new-notification"
+      import.meta.env.VITE_PROD_SERVER_URL + "/new-notification"
     );
 
     source.addEventListener("new-notification", (e) => {
@@ -44,7 +44,7 @@ function AuthenticatedLayout() {
     <>
       <main className="dark:bg-[#09090B] dark:text-white">
         <div className="2xl:container">
-          <div className="sticky top-0 z-10 backdrop-blur-md">
+          <div className="sticky top-0 z-20 backdrop-blur-md">
             <div className="w-full flex justify-between items-center px-6 pt-4 pb-2">
               <Link className="flex items-center justify-center gap-2" to={"/"}>
                 <Card className="rounded-md overflow-hidden w-max">

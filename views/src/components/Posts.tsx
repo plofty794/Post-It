@@ -16,6 +16,8 @@ import { Circle } from "lucide-react";
 import PostDropdownMenu from "./PostDropdownMenu";
 import PostFooter from "./PostFooter";
 import { TUserData } from "@/hooks/auth/users/useGetUser";
+import { TPostUpvotes } from "@/hooks/auth/posts/useGetYourPostUpvotes";
+import { TPostDownvotes } from "@/hooks/auth/posts/useGetYourPostDownvotes";
 
 function Posts({
   posts,
@@ -29,7 +31,10 @@ function Posts({
   fetchNextPage: (
     options?: FetchNextPageOptions | undefined
   ) => Promise<
-    InfiniteQueryObserverResult<InfiniteData<TPosts, unknown>, Error>
+    InfiniteQueryObserverResult<
+      InfiniteData<TPosts | TPostUpvotes | TPostDownvotes, unknown>,
+      Error
+    >
   >;
 }) {
   const { isIntersecting, ref } = useIntersectionObserver({

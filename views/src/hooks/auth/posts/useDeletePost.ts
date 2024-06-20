@@ -1,7 +1,12 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
+import { TPosts } from "./useGetPosts";
 
 function useDeletePost() {
   const queryClient = useQueryClient();
@@ -9,8 +14,52 @@ function useDeletePost() {
     mutationFn: async ({ postID }: { postID: string }) => {
       return await axiosPrivateRoute.delete(`/posts/delete-post/${postID}`);
     },
-    onSuccess(data) {
+    onSuccess(data, { postID }) {
       toast.success(data.data.message);
+
+      queryClient.setQueryData(
+        ["posts"],
+        (
+          oldData: InfiniteData<TPosts, unknown>
+        ): InfiniteData<TPosts, unknown> => {
+          const updatedPosts = oldData.pages.flatMap((v) =>
+            v.data.posts.filter((v) => v._id !== postID)
+          );
+
+          return {
+            pages: [
+              {
+                data: {
+                  posts: updatedPosts,
+                },
+              },
+            ],
+            pageParams: [1],
+          };
+        }
+      );
+
+      queryClient.setQueryData(
+        ["your-posts"],
+        (
+          oldData: InfiniteData<TPosts, unknown>
+        ): InfiniteData<TPosts, unknown> => {
+          const updatedPosts = oldData.pages.flatMap((v) =>
+            v.data.posts.filter((v) => v._id !== postID)
+          );
+
+          return {
+            pages: [
+              {
+                data: {
+                  posts: updatedPosts,
+                },
+              },
+            ],
+            pageParams: [1],
+          };
+        }
+      );
     },
     onError(err) {
       const error = ((err as AxiosError).response as AxiosResponse).data.error;

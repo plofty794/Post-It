@@ -26,7 +26,9 @@ function CommentFooter({
   isUpvotedByYou,
   isDownvotedByYou,
   isReplyALink,
+  isCommentedByYou,
 }: {
+  isCommentedByYou: boolean;
   postID: string;
   commentID: string;
   upvoteCount: number;
@@ -63,53 +65,54 @@ function CommentFooter({
             </Button>
           </Toggle>
         )}
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              size={"sm"}
-              variant={"ghost"}
-              className="hover:!bg-stone-600 px-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="size-5"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                />
-              </svg>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem className="p-0">
-              <Button
-                className="text-xs gap-2 !bg-transparent"
-                size={"sm"}
-                variant={"ghost"}
-              >
-                <PencilIcon className="size-4" />
-                Edit comment
-              </Button>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="p-0">
+        {isCommentedByYou && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
                 size={"sm"}
                 variant={"ghost"}
-                className="text-xs gap-2 !bg-transparent"
+                className="hover:!bg-stone-600 px-2"
               >
-                <Trash2Icon className="size-4" />
-                Delete comment
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="size-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                  />
+                </svg>
               </Button>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="p-0">
+                <Button
+                  className="text-xs gap-2 !bg-transparent"
+                  size={"sm"}
+                  variant={"ghost"}
+                >
+                  <PencilIcon className="size-4" />
+                  Edit comment
+                </Button>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="p-0">
+                <Button
+                  size={"sm"}
+                  variant={"ghost"}
+                  className="text-xs gap-2 !bg-transparent"
+                >
+                  <Trash2Icon className="size-4" />
+                  Delete comment
+                </Button>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
       <div className={cn("mt-2", isCommentInputOpen ? "block" : " hidden")}>
         <PostComment postID={postID} commentID={commentID} />

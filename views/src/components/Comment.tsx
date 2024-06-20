@@ -63,6 +63,9 @@ function Comment({
             }}
           ></div>
           <CommentFooter
+            isCommentedByYou={
+              comment.author._id === yourProfileData?.data._id ? true : false
+            }
             postID={comment.post._id}
             isReplyALink={false}
             upvoteCount={comment.upvoteCount}

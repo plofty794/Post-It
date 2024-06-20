@@ -3,14 +3,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
 
-function useCreatePost() {
+function useDeleteComment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ title, body }: { title: string; body?: string }) => {
-      return axiosPrivateRoute.post("/posts/create-post", {
-        title,
-        body,
-      });
+    mutationFn: async ({ commentID }: { commentID: string }) => {
+      return await axiosPrivateRoute.delete(
+        `/comments/delete-comment/${commentID}`
+      );
     },
     onSuccess(data) {
       toast.success(data.data.message);
@@ -24,8 +23,20 @@ function useCreatePost() {
         queryKey: ["posts"],
         refetchType: "all",
       });
+      queryClient.invalidateQueries({
+        queryKey: ["your-posts"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-saved-posts"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["your-hidden-posts"],
+        refetchType: "all",
+      });
     },
   });
 }
 
-export default useCreatePost;
+export default useDeleteComment;

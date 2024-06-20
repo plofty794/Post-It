@@ -94,6 +94,11 @@ function YourComment({
                 }}
               ></div>
               <CommentFooter
+                isCommentedByYou={
+                  comment.author._id === yourProfileData?.data._id
+                    ? true
+                    : false
+                }
                 postID={comment.post._id}
                 isReplyALink={true}
                 isDownvotedByYou={
@@ -182,6 +187,9 @@ function YourComment({
               }}
             ></div>
             <CommentFooter
+              isCommentedByYou={
+                comment.author._id === yourProfileData?.data._id ? true : false
+              }
               postID={comment.post._id}
               isReplyALink={true}
               isDownvotedByYou={

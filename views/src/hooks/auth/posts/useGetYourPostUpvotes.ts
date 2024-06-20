@@ -1,12 +1,12 @@
 import { axiosPrivateRoute } from "@/api/axiosPrivateRoute";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { TPosts } from "./useGetPosts";
+import { TUpvote } from "./useGetPosts";
 
-function useGetYourPosts() {
+function useGetYourPostUpvotes() {
   return useInfiniteQuery({
-    queryKey: ["your-posts"],
-    queryFn: async ({ pageParam = 1 }): Promise<TPosts> => {
-      return await axiosPrivateRoute.get(`/posts/your-posts/${pageParam}`, {
+    queryKey: ["your-post-upvotes"],
+    queryFn: async ({ pageParam = 1 }): Promise<TPostUpvotes> => {
+      return await axiosPrivateRoute.get(`/posts/upvotes/${pageParam}`, {
         signal: AbortSignal.timeout(1000 * 60),
       });
     },
@@ -14,7 +14,6 @@ function useGetYourPosts() {
     getNextPageParam: (_, page) => page.length + 1,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-    staleTime: 1000 * 60,
     gcTime: 60000,
     throwOnError(error) {
       if (
@@ -28,4 +27,10 @@ function useGetYourPosts() {
   });
 }
 
-export default useGetYourPosts;
+export type TPostUpvotes = {
+  data: {
+    postUpvotes: TUpvote[];
+  };
+};
+
+export default useGetYourPostUpvotes;

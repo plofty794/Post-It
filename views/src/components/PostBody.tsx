@@ -260,7 +260,8 @@ function EditPost({
         className="w-max ml-auto"
         onClick={() => editPost()}
         disabled={
-          !editor?.getText().length ||
+          !editor?.isFocused ||
+          editor?.isEmpty ||
           editor?.storage.characterCount.characters() >= limit ||
           !title.length ||
           title.length > 150

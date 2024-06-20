@@ -13,6 +13,8 @@ import YourPosts from "./YourPosts";
 import YourHiddenPosts from "./YourHiddenPosts";
 import YourComments from "./YourComments";
 import YourSavedPosts from "./YourSavedPosts";
+import YourUpvotes from "./YourUpvotes";
+import YourDownvotes from "./YourDownvotes";
 
 function ProfileTabs() {
   return (
@@ -56,10 +58,10 @@ function ProfileTabs() {
         <YourSavedPosts />
       </TabsContent>
       <TabsContent value="upvotes">
-        <YourHiddenPosts />
+        <YourUpvotes />
       </TabsContent>
       <TabsContent value="downvotes">
-        <YourHiddenPosts />
+        <YourDownvotes />
       </TabsContent>
     </Tabs>
   );

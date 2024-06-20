@@ -3,13 +3,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { toast } from "sonner";
 
-function useCreatePost() {
+function useEditComment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ title, body }: { title: string; body?: string }) => {
-      return axiosPrivateRoute.post("/posts/create-post", {
-        title,
-        body,
+    mutationFn: async ({
+      commentID,
+      content,
+    }: {
+      commentID: string;
+      content: string;
+    }) => {
+      return axiosPrivateRoute.patch(`/comments/edit-comment/${commentID}`, {
+        content,
       });
     },
     onSuccess(data) {
@@ -19,13 +24,15 @@ function useCreatePost() {
       const error = ((err as AxiosError).response as AxiosResponse).data.error;
       toast.error(error);
     },
-    onSettled() {
+    onSettled(_, __, { commentID }) {
       queryClient.invalidateQueries({
         queryKey: ["posts"],
-        refetchType: "all",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["comment", commentID],
       });
     },
   });
 }
 
-export default useCreatePost;
+export default useEditComment;

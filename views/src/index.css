@@ -160,6 +160,7 @@ blockquote {
 
 .logo {
   font-family: "Satisfy", cursive;
+  font-style: italic;
 }
 
 .sidebar .active > button,
